@@ -180,6 +180,97 @@ cargo run
 
 #### Data types
 
+- Rust is a statically typed language
+- The compiler can infer types for variables based on their usage
+
+Scalar types:
+
+##### Integer
+
+- signed values: i8, i16, i32, i64, i128, isize
+- unsigned values: u8, u16, u32, u64, u128, usize
+- literals
+  - decimal: 98_222
+  - hex: 0xff
+  - octal: 0o77
+  - binary: 0b1111_0000
+  - byte: b'A'
+
+```rust
+fn main() {
+    let number: u32 = 42;   // type specified explicitly
+    let number_auto = 42;   // type inferred (integer)
+
+    let number_convert = "42".parse().expect("Not a number!"); // incorrect: type must be specified
+    let number_convert_type: u32 = "42".parse().expect("Not a number!"); // type specified explicitly
+}
+```
+
+##### Floating point (f32, f64)
+
+```rust
+fn main() {
+    let x = 2.0;        // f64
+    let y: f32 = 3.0;   // f32
+}
+```
+
+##### Boolean (bool)
+
+```rust
+fn main() {
+    let t = true;
+    let f: bool = false; // with explicit type annotation
+}
+```
+
+##### Character (char)
+
+- 4 bytes
+- Unicode Scalar Value
+
+```rust
+fn main() {
+    let c = 'z';
+    let z = 'ℤ';
+    let heart_eyed_cat = '😻';
+}
+```
+
+##### Tuples (..., ...)
+
+```rust
+fn main() {
+    let tup: (i32, f64, u8) = (500, 6.4, 1);    // element types defined explicitly
+    let tup2 = (500, 6.4, 1);                   // element types inferred
+
+    // destructuring - pattern matching
+    let (x, y, z) = tup;
+
+    // destructuring - direct access to values
+    let five_hundred = tup.0;
+    let six_point_four = tup.1;
+    let one = tup.2;
+}
+```
+
+##### Array [..., ...]
+
+```rust
+fn main() {
+    let a: [i32; 5] = [1, 2, 3, 4, 5];  // element type and number defined explicitly
+    let b = [1, 2, 3, 4, 5];            // element type and number inferred
+    let c = [3; 5];                     // 3 repeated 5 times: [3, 3, 3, 3, 3]
+
+    // element access
+    let first = a[0];
+    let second = a[1];
+
+    // invalid element access
+    let element = a[10];                // compiles fine; panics at runtime
+}
+```
+
 #### Functions
 
 #### Conditions
