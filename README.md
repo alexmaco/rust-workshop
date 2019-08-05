@@ -10,14 +10,15 @@
 
 The Rust compiler (**rustc**), the build and package manager (**cargo**) and other tools can be installed and managed using the **rustup** script
 
-Installing
+Installing: https://www.rust-lang.org/tools/install
+
 - on Linux/MacOS:
 
 ```bash
 curl https://sh.rustup.rs -sSf | sh
 ```
 
-- on Windows: Go to https://www.rust-lang.org/tools/install, download and run [rustup](https://win.rustup.rs) and follow the instructions
+- on Windows: Download and run [rustup](https://win.rustup.rs) and follow the instructions
 
 Updating to the latest version:
 
@@ -157,34 +158,9 @@ The files resulting after build
 │   └── main.rs
 └── target
     ├── debug
-    │   ├── build
-    │   ├── .cargo-lock
-    │   ├── deps
-    │   │   ├── hello_world-ea524071200ba1bf
-    │   │   └── hello_world-ea524071200ba1bf.d
-    │   ├── examples
-    │   ├── .fingerprint
-    │   │   └── hello_world-ea524071200ba1bf
-    │   │       ├── bin-hello_world-ea524071200ba1bf
-    │   │       ├── bin-hello_world-ea524071200ba1bf.json
-    │   │       ├── dep-bin-hello_world-ea524071200ba1bf
-    │   │       └── invoked.timestamp
+    │   ├── ...
     │   ├── hello_world     # the executable
-    │   ├── hello_world.d
-    │   ├── incremental
-    │   │   └── hello_world-i8z0ac1imn9w
-    │   │       ├── s-fempgkewa9-1e2dfud-25iov1hd0197
-    │   │       │   ├── 1wb430bvj6yoz323.o
-    │   │       │   ├── 29qmrbvbjqvcx665.o
-    │   │       │   ├── 3ol3biqerv0g6ays.o
-    │   │       │   ├── 4y24le9b4mrop67.o
-    │   │       │   ├── dep-graph.bin
-    │   │       │   ├── hcmbcw7y9emfvya.o
-    │   │       │   ├── pvi1g2opqvvaos5.o
-    │   │       │   ├── query-cache.bin
-    │   │       │   └── work-products.bin
-    │   │       └── s-fempgkewa9-1e2dfud.lock
-    │   └── native
+    │   ├── ...
     └── .rustc_info.json
 ```
 
