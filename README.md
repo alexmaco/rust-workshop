@@ -285,6 +285,56 @@ fn main() {
 
 #### Functions
 
+##### Function without parameters, no return value
+
+```rust
+// definition
+fn my_func() {
+    println!("my_func");
+}
+
+// call
+my_func();
+```
+
+##### Function with parameters, no return value
+
+In a function's signature, the type of the parameters must always be declared.
+
+```rust
+// definition
+fn my_func1(x: i32) {
+    println!("my_func1, x: {}", x);
+}
+
+fn my_func2(x: i32, y: u8) {
+    println!("my_func2, x: {}, y: {}", x, y);
+}
+
+// call
+my_func1(42);
+my_func2(1, 2);
+```
+
+##### Function with parameters, with return value
+
+```rust
+// definition
+fn my_func(x: i32) -> bool {
+    println!("my_func, x: {}", x);
+    return x;
+}
+
+// call
+let result = my_func(0);
+```
+
+##### Exercise 2 (average with functions)
+
+- modify the code from Exercise 1 (average)
+- extract the computing of average in a function
+- call the function for multiple sets of values
+
 #### Conditions
 
 #### Loops
