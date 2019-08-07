@@ -271,6 +271,18 @@ fn main() {
 }
 ```
 
+##### Exercise 1 (average)
+
+- following the above steps, create a new project
+- in main:
+  - declare 3 numbers
+  - compute the **average** of them and store the result in a variable
+  - display the result with
+
+    ```rust
+    println!("Result: {}", result);
+    ```
+
 #### Functions
 
 #### Conditions
