@@ -350,7 +350,61 @@ let result = my_func(0);
 - extract the computing of average in a function
 - call the function for multiple sets of values
 
-#### Conditions
+#### Conditions (if expressions)
+
+- **if** is an expression, thus returning a value
+  - the returned value is the one returned from the taken branch
+  - both branches must return values of the same type
+- the condition **must** be a **bool**
+
+```rust
+fn main() {
+    let val = 9;
+
+    // if without else
+    if val > 0 {
+        println!("positive value {}", val);
+    }
+
+    // if else
+    if val < 10 {
+        println!("{} is a digit", val);
+    } else {
+        println!("{} is not a digit", val);
+    }
+
+    // multiple cases
+    if val < 10 {
+        println!("{} is lower than 10", val);
+    } else if val < 100 {
+        println!("{} if lower than 100", val);
+    } else if val == 100 {
+        println!("{} is 100", val);
+    } else {
+        println!("{} is greater than 100", val);
+    }
+
+    // incorrect - the condition must be bool => compilation error
+    if val {
+        println!("condition is true");
+    }
+
+    // assign the value of if to a variable
+    let result = if true {
+        5
+    } else {
+        6
+    }; // note the ending semicolon
+
+
+    // incorrect - the branches return different types => compilation error
+    let result = if true {
+        5       // integer type
+    } else {
+        "abc"   // string type
+    };
+}
+```
 
 #### Loops
 
