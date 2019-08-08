@@ -285,6 +285,12 @@ fn main() {
 
 #### Functions
 
+- may have a return type or not
+- may have none, one or more parameters
+- the body is made up of a series of **statements** (no value returned)
+- optionally, the body can end in an **expression** (returns a value)
+- `WARNING`: **expressions** do not include ending **semicolon**; if semicolon is added to the end of an expression, it is turned into a **statement** and it won't return any value
+
 ##### Function without parameters, no return value
 
 ```rust
@@ -322,7 +328,16 @@ my_func2(1, 2);
 // definition
 fn my_func(x: i32) -> bool {
     println!("my_func, x: {}", x);
-    return x;
+
+    // explicit return (statement, must end with semicolon)
+    return x == 1;
+}
+
+fn my_func2(x: i32) -> bool {
+    println!("my_func, x: {}", x);
+
+    // implicit return (expression, no ending semicolon)
+    x < 5
 }
 
 // call
