@@ -408,6 +408,82 @@ fn main() {
 
 #### Loops
 
+##### loop
+
+- **infinite loop**: repeats executing the body until explicitly stopped
+- options to stop the execution
+  - kill the program (**CTRL + C**)
+  - use **break** in the code
+- a value can be returned after **break**
+
+```rust
+fn main() {
+    loop {
+        println!("infinite loop");
+    }
+}
+
+fn iterate_x_times(x: u32) {
+    let mut i = 0;
+
+    let result = loop {
+        if i == x {
+            break i;
+        }
+
+        println!("Iteration {}", i);
+
+        i += 1;
+    };
+
+    println!("result is {}", result);
+}
+```
+
+##### while
+
+- loop while condition is true, then break
+- equivalent to **loop** with **break** after an **if** that checks the condition
+- does not return a value
+
+```rust
+fn iterate_x_times_while(x: u32) {
+    let mut i = 0;
+
+    while i < x {
+        println!("Iteration {}", i);
+        i += 1;
+    };
+}
+```
+
+##### for
+
+- iterate over a collection's elements
+- equivalent to **while**, checking if there are more elements
+- does not return a value
+
+```rust
+fn main() {
+    let a = [1, 2, 3, 4, 5];
+
+    for n in a.iter() {
+        println!("value {}", n)
+    }
+}
+
+fn iterate_x_times_for(x: u32) {
+    for i in (0..x) {
+        println!("Iteration {}", i);
+    }
+}
+```
+
+##### Exercise 3 (prime numbers)
+
+- define an **array** variable that contains some **u32** values
+- display for each number if it is prime or not (a number is prime if it is divisible only by 1 and itself)
+
 #### Ownership
 
 #### Structs
