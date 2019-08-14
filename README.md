@@ -620,13 +620,25 @@ Option: map, and, and_then, or_else, unwrap_or, unwrap_or_else
 
 ### The `Iterator` trait
 
-#### `map` : transform
+```rust
+pub trait Iterator {
+    type Item;
+    fn next(&mut self) -> Option<Self::Item>;
 
-#### `find` : get element if it exists
+    // ... other methods
+}
+```
 
-#### `filter` : only keep some elements
+Basic idea:
+* `next()` and returns the next element and advances iteration
+* when `next()` returns `None` iteration has finished
+* `Item` is an associated type: the implementation specifies the type of the element
 
-#### `collect` : CLICK HERE to turn your sequence into a collection with this ONE WEIRD TRICK!
+Frequently used methods:
+* [`map` : transforms using the given closure](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.map)
+* [`filter` : discard elements using closure](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.filter)
+* [`find` : get element if it exists](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.find)
+* [`collect`: gather elements into Vec/HashMap/String/etc](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.collect)
 
 ### Threads and Threads safety
 
