@@ -563,3 +563,102 @@ println!("user1: {:?}", user1);
 #### Tests
 
 ## Day 2 - Usage patterns & Real life applications
+
+### Conversion traits: `From`, `Into`, `TryFrom`, `TryInto`
+
+From: [https://doc.rust-lang.org/core/convert/trait.From.html]()
+
+TryFrom: [https://doc.rust-lang.org/core/convert/trait.TryFrom.html]()
+
+```rust
+let s1: &str = "text";
+let s2 = String::from(s1); // call impl From<str> for String directly
+let s3: String = s1.into(); // convert s1 into into whatever is needed
+
+let large_val = 12345;
+println!("conversion result: {:?}", u8::try_from(large_val));
+```
+
+### Passing Functions and Closures
+
+```rust
+// a function can take an argument, that is another function !
+// (note: we cannot name the type of a function, so we use trait bounds)
+//
+// available traits are Fn, FnMut, and FnOnce
+fn convert_and_call<F>(n: u64, process: F)
+where
+    F: Fn(&str) -> usize
+{
+    let s = n.to_string();
+    let res = process(&s);
+    println!("processing function returned {}", res);
+}
+
+fn do_actual_work(s: &str) -> usize {
+    println!("pretending to do some work with {}", s);
+    s.len()
+}
+
+fn main() {
+    convert_and_call(1111, do_actual_work);
+
+    convert_and_call(2222, |s| 3); // closures can return a value
+    convert_and_call(3333, |s| s.len() * 22); // ...or compute things
+
+    let x = 5;
+    convert_and_call(4444, |s| {
+        println!("closures can capture their environment");
+        s.len() * x
+    }); // ...or be a full block of code
+}
+```
+
+### Combinators
+
+Option: map, and, and_then, or_else, unwrap_or, unwrap_or_else
+
+### The `Iterator` trait
+
+#### `map` : transform
+
+#### `find` : get element if it exists
+
+#### `filter` : only keep some elements
+
+#### `collect` : CLICK HERE to turn your sequence into a collection with this ONE WEIRD TRICK!
+
+### Threads and Threads safety
+
+#### The `Send` and `Sync` marker traits
+
+### Serde!
+
+```rust
+use serde_json::{Serialize, Deserialize};
+
+#[derive(Serialize, Deserialize)] // this is where the magic happens
+struct TheData {
+    x: u32,
+    s: String,
+    v: Vec<f32>,
+}
+
+let d = TheData { x: 5, s: "abcd".into(), v: vec![1,2,3] };
+
+let s = serde_json::to_string_pretty(&d).expect("serialization failed")
+println!("{}", s);
+
+let recovered: TheData = match serde_json::from_str(&s) {
+    Ok(data) => data,
+    Err(e) => {
+        println!("deserialization error: {:?}", e);
+        return;
+    }
+};
+```
+
+
+## Maybe
+
+### Using `io::Read` and `io::Write` on `slice`
