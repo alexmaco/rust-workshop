@@ -686,7 +686,54 @@ Frequently used methods:
 - [`find` : get element if it exists](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.find)
 - [`collect`: gather elements into Vec/HashMap/String/etc](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.collect)
 
-### Threads and Threads safety
+### Threads and Thread Safety
+
+```rust
+thread::spawn(move || {
+    let listener = TcpListener::bind("127.0.0.1:1234").unwrap();
+
+    loop {
+        let conn = listener.accept();
+
+        thread::spawn(move || {
+            let (mut stream, remote) = match conn {
+                Ok(x) => x,
+                _ => return,
+            };
+            println!("new client connected from {}", remote);
+
+            let mut buf = vec![];
+
+            loop {
+                buf.clear();
+                let len = std::io::BufReader::new(&mut stream).read_until(b'\n', &mut buf);
+                if let Ok(0) = len {
+                    // connection closed. goodnight.
+                    return;
+                }
+                if let Err(e) = len {
+                    eprintln!("error receiving from client {}: {:?}", remote, e);
+                    return;
+                }
+
+                let num: i64 = buf
+                    .as_slice()
+                    .map(|bytes| str::from_utf8(bytes))
+                    .and_then(|s| s.parse().ok());
+
+                let reply = num.map(|x| x + 1);
+
+                match reply {
+                    Some(num) => stream.write_all(result.as_bytes()).unwrap(),
+                    None => stream.write_all("request not understood".as_bytes()),
+                }
+                stream.write_all(b"\n").unwrap();
+            }
+        });
+    }
+});
+
+```
 
 #### The `Send` and `Sync` marker traits
 
