@@ -617,6 +617,7 @@ fn main() {
 ### Combinators and Transforms
 
 [`Option::map`](https://doc.rust-lang.org/std/option/enum.Option.html#method.map) :
+
 ```rust
 let x: Option<u32> = Some(3);
 // let's change the value 'inside' the Option
@@ -632,6 +633,7 @@ let x3 = x.map(|val| val + 1);
 ```
 
 [`Option::and_then`](https://doc.rust-lang.org/std/option/enum.Option.html#method.and_then) :
+
 ```rust
 fn triple_if_even(n: u32) -> Option<u32> {
     if n % 2 == 0 {
@@ -672,21 +674,23 @@ pub trait Iterator {
 ```
 
 Basic idea:
-* `next()` returns the next element and advances iteration
-* when `next()` returns `None` iteration has finished
-* `Item` is an associated type: the implementation specifies the type of the element
+
+- `next()` returns the next element and advances iteration
+- when `next()` returns `None` iteration has finished
+- `Item` is an associated type: the implementation specifies the type of the element
 
 Frequently used methods:
-* [`map` : transforms using the given closure](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.map)
-* [`filter` : discard elements using closure](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.filter)
-* [`find` : get element if it exists](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.find)
-* [`collect`: gather elements into Vec/HashMap/String/etc](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.collect)
+
+- [`map` : transforms using the given closure](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.map)
+- [`filter` : discard elements using closure](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.filter)
+- [`find` : get element if it exists](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.find)
+- [`collect`: gather elements into Vec/HashMap/String/etc](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.collect)
 
 ### Threads and Threads safety
 
 #### The `Send` and `Sync` marker traits
 
-### Serde!
+### Serde
 
 ```rust
 use serde_json::{Serialize, Deserialize};
