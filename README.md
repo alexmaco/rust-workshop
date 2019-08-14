@@ -566,9 +566,9 @@ println!("user1: {:?}", user1);
 
 ### Conversion traits: `From`, `Into`, `TryFrom`, `TryInto`
 
-From: [https://doc.rust-lang.org/core/convert/trait.From.html]()
+From: <https://doc.rust-lang.org/core/convert/trait.From.html>
 
-TryFrom: [https://doc.rust-lang.org/core/convert/trait.TryFrom.html]()
+TryFrom: <https://doc.rust-lang.org/core/convert/trait.TryFrom.html>
 
 ```rust
 let s1: &str = "text";
