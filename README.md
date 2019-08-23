@@ -488,6 +488,62 @@ fn iterate_x_times_for(x: u32) {
 
 #### Structs
 
+- similar with tuples, but have names for the fields
+- the whole structure must be declared **mutable** or not; there is no control per field
+
+```rust
+// definition
+struct User {
+    username: String,
+    email: String,
+    sign_in_count: u64,
+    active: bool,
+}
+
+// instantiation
+let mut user = User {
+    email: String::from("someone@example.com"),
+    username: String::from("someusername123"),
+    active: true,
+    sign_in_count: 1,
+};
+
+// member access
+let active = user.active;
+user.email = String::from("other@example.com");
+
+// instantiate using variables with the same name as the fields
+let username = String::from("user");
+let email = String::from("email");
+
+let user1 = User {
+    username,           // equivalent to username: username
+    email,              // email: email
+    active: true,
+    sign_in_count: 1,
+};
+
+// instantiate with some values from other instance
+let user2 = User {
+    username: String::from("foo"),
+    email::String::from("bar"),
+    ..user1                     // take the remaining values from user1
+}
+
+// try to display the struct
+println!("user1: {}", user1);   // error
+
+// display using debug; must also add #[derive(Debug)] before struct User
+println!("user1: {:?}", user1);
+```
+
+##### Exercise 4 (rectangle area)
+
+- define a structure to hold a **Rectangle**
+- instantiate one **Rectangle**
+- display the **Rectangle**
+- write a function to compute the area of the **Rectangle**
+
 #### Enums
 
 #### Pattern matching
