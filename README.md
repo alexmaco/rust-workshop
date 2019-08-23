@@ -948,6 +948,16 @@ thread::spawn(move || {
 
 ### Serde
 
+- the [`serde_json`](https://crates.io/crates/serde_json) crate has support for (de)serialization to/from JSON
+- it can convert rust structs to JSON objects, rust `Vec`s to JSON arrays, etc.
+- it works by using `derive` annotations
+
+```toml
+# in Cargo.toml
+[dependencies]
+serde_json = "1.0"
+```
+
 ```rust
 use serde_json::{Serialize, Deserialize};
 
