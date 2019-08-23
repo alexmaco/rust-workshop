@@ -1,4 +1,4 @@
-Symmary of [Appendinx C from the book](https://doc.rust-lang.org/book/appendix-03-derivable-traits.html)
+Summary of [Appendinx C from the book](https://doc.rust-lang.org/book/appendix-03-derivable-traits.html)
 
 These are the standard traits we can `#[derive(NameOfTheTrait)]`
 
