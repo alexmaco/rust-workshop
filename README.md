@@ -484,6 +484,23 @@ fn iterate_x_times_for(x: u32) {
 - define an **array** variable that contains some **u32** values
 - display for each number if it is prime or not (a number is prime if it is divisible only by 1 and itself)
 
+#### Strings
+
+- type: **String**
+
+```rust
+fn main() {
+    let literal = "hello";              // literal string
+    let mut s = String::from(literal);  // string object
+
+    s.push_str(" world!");              // append string
+
+    println!("{}", s);
+
+    let s1 = s.clone();                 // duplicate the string data
+}
+```
+
 #### Ownership
 
 #### Structs
