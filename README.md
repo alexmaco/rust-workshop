@@ -657,6 +657,8 @@ println!("bad: {:?}", V4Netmask::try_from(V4Prefix { value: 52438 }));
 
 ### Passing Functions and Closures
 
+Functions and closures can be passed around as arguments:
+
 ```rust
 // a function can take an argument, that is another function !
 // (note: we cannot name the type of a function, so we use trait bounds)
