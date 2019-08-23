@@ -355,6 +355,7 @@ let result = my_func(0);
 - **if** is an expression, thus returning a value
   - the returned value is the one returned from the taken branch
   - both branches must return values of the same type
+  - if the branches don't return a value, the return is **()** called **unit type**
 - the condition **must** be a **bool**
 
 ```rust
