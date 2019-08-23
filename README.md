@@ -646,7 +646,7 @@ fn triple_if_even(n: u32) -> Option<u32> {
 let x: Option<u32> = Some(3);
 // Task: pass the values inside x thru triple_if_even
 
-// x.map(triple_if_even) will result in Option<Option<u32>>
+// x.map(triple_if_even) would result in Option<Option<u32>>
 
 // basic version
 let x2 = match x {
@@ -736,6 +736,30 @@ thread::spawn(move || {
 ```
 
 #### The `Send` and `Sync` marker traits
+
+`Send` basic idea:
+
+- when an object is created in a function, it only exists on one thread
+  - we can say that thread "owns" the object
+- if the type is safe to move to another thread, the compiler marks it with `Send`
+  - e.g. `let x = 5;` or `let stuff = vec![1, 2, 3];` are both safe to `Send`
+- what is not `Send`:
+  - objects with a reference inside
+  - e.g. `&mut Vec<T>`, a mutable ref to Vec cannot be `Send`, because 2 threads would be able to mutate it at the same time
+
+`Sync` basic idea:
+
+- a `Vec` is not threadsafe:
+  - i.e. it is _not_ safe to mutate it from 2 threads
+  - so it is not safe to have 2 `&mut` references to it
+  - (but it is ok to have many shared references, readonly access is safe)
+- the compiler infers that `Vec` is not `Sync` (i.e. `Vec<T>: !Sync`)
+  - the compiler does not allow mutable access from more than one thread
+- Some basic types are `Sync` and therefore safe
+  - a `std::sync::Mutex<T>` is `Sync`
+  - a `std::sync::Arc<T>` is `Sync`
+  - a `std::sync::atomic::AtomicBool` is `Sync`
+    - but plain `bool` is not
 
 ### Serde
 
