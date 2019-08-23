@@ -355,6 +355,7 @@ let result = my_func(0);
 - **if** is an expression, thus returning a value
   - the returned value is the one returned from the taken branch
   - both branches must return values of the same type
+  - if the branches don't return a value, the return is **()** called **unit type**
 - the condition **must** be a **bool**
 
 ```rust
@@ -484,6 +485,23 @@ fn iterate_x_times_for(x: u32) {
 - define an **array** variable that contains some **u32** values
 - display for each number if it is prime or not (a number is prime if it is divisible only by 1 and itself)
 
+#### Strings
+
+- type: **String**
+
+```rust
+fn main() {
+    let literal = "hello";              // literal string
+    let mut s = String::from(literal);  // string object
+
+    s.push_str(" world!");              // append string
+
+    println!("{}", s);
+
+    let s1 = s.clone();                 // duplicate the string data
+}
+```
+
 #### Ownership
 
 #### Structs
@@ -546,7 +564,152 @@ println!("user1: {:?}", user1);
 
 #### Enums
 
+- define the possible values for a type
+
+```rust
+// declaration
+enum IpAddrKind {
+    V4,
+    V6,
+}
+
+struct IpAddr {
+    kind: IpAddrKind,
+    address: String,
+}
+
+// better alternative
+enum IpAddrEnum {
+    V4(String),
+    V6(String),
+}
+
+// the variants can contain any type
+enum Message {
+    Quit,
+    Move { x: i32, y: i32 },
+    Write(String),
+    ChangeColor(i32, i32, i32),
+}
+
+fn main() {
+    let v4 = IpAddrKind::V4;
+    let v6 = IpAddrKind::V6;
+
+    let home = IpAddr {
+        kind: IpAddrKind::V4,
+        address: String::from("127.0.0.1"),
+    };
+
+    let home2 = IpAddrEnum::V4(String::from("127.0.0.1"));
+}
+```
+
+##### The Option enum
+
+- special enum, widely used
+- alternative to returning a **Null** value
+- **Null** means the value is not present, not a value that is invalid
+
+```rust
+// T is replaced with any type we need when using the enum
+enum Option<T> {
+    Some(T),
+    None,
+}
+
+fn main() {
+    let some_number = Some(5);
+    let some_string = Some("a string");
+
+    let no_number: Option<i32> = None;  // must specify the type, the compiler cannot infer it
+
+    // Option<T> cannot be used directly as T
+    // the None case must be explicitly handled when the value is actually used
+    let sum = 42 + some_number;         // error
+}
+```
+
 #### Pattern matching
+
+- compare a value against possible patterns; the code corresponding to the first pattern that matches is executed
+- returns the value from the branch that was taken
+- all the branches must return values of the same type
+- the compiler checks that all the possible cases are handled
+- useful for destructuring types
+
+```rust
+enum Coin {
+    Penny,
+    Nickel,
+    Dime,
+    Quarter,
+}
+
+fn value_in_cents(coin: Coin) -> u8 {
+    match coin {
+        Coin::Penny => 1,
+        Coin::Nickel => 5,
+        Coin::Dime => 10,
+        Coin::Quarter => 25,
+    }
+}
+```
+
+- the containing values can be used in match branches
+
+```rust
+enum IpAddr {
+    V4(String),
+    V6(String),
+    Wrong
+}
+
+fn ip_to_string(ip: IpAddr) -> String {
+    match ip {
+        IpAddr::V4(ipv4_string) => ipv4_string,
+        IpAddr::V6(ipv6_string) => ipv6_string,
+        _ => String::from("wrong format"),          // default case; matches anything
+    }
+}
+```
+
+- get inner value for Option\<T>
+
+```rust
+fn plus_one(x: Option<i32>) -> Option<i32> {
+    match x {
+        None => None,
+        Some(i) => Some(i + 1),
+    }
+}
+
+let five = Some(5);
+let six = plus_one(five);
+let none = plus_one(None);
+```
+
+##### if let
+
+- more concise way to write a match where all branches but one are ignored
+- useful when we want to do something only on one branch, the other being
+  - `_ => ()`
+- can optionally have an **else**
+
+```rust
+
+// match
+let some_u8_value = Some(0u8);
+match some_u8_value {
+    Some(3) => println!("three"),
+    _ => (),
+}
+
+// equivalent if let
+if let Some(3) = some_u8_value {
+    println!("three");
+}
+```
 
 #### Crates
 
