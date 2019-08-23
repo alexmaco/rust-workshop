@@ -563,3 +563,231 @@ println!("user1: {:?}", user1);
 #### Tests
 
 ## Day 2 - Usage patterns & Real life applications
+
+### Conversion traits: `From`, `Into`, `TryFrom`, `TryInto`
+
+From: <https://doc.rust-lang.org/core/convert/trait.From.html>
+
+TryFrom: <https://doc.rust-lang.org/core/convert/trait.TryFrom.html>
+
+```rust
+let s1: &str = "text";
+let s2 = String::from(s1); // call impl From<str> for String directly
+let s3: String = s1.into(); // convert s1 into into whatever is needed
+
+let large_val = 12345;
+println!("conversion result: {:?}", u8::try_from(large_val));
+```
+
+### Passing Functions and Closures
+
+```rust
+// a function can take an argument, that is another function !
+// (note: we cannot name the type of a function, so we use trait bounds)
+//
+// available traits are Fn, FnMut, and FnOnce
+fn convert_and_call<F>(n: u64, process: F)
+where
+    F: Fn(&str) -> usize
+{
+    let s = n.to_string();
+    let res = process(&s);
+    println!("processing function returned {}", res);
+}
+
+fn do_actual_work(s: &str) -> usize {
+    println!("pretending to do some work with {}", s);
+    s.len()
+}
+
+fn main() {
+    convert_and_call(1111, do_actual_work);
+
+    convert_and_call(2222, |s| 3); // closures can return a value
+    convert_and_call(3333, |s| s.len() * 22); // ...or compute things
+
+    let x = 5;
+    convert_and_call(4444, |s| {
+        println!("closures can capture their environment");
+        s.len() * x
+    }); // ...or be a full block of code
+}
+```
+
+### Combinators and Transforms
+
+[`Option::map`](https://doc.rust-lang.org/std/option/enum.Option.html#method.map) :
+
+```rust
+let x: Option<u32> = Some(3);
+// let's change the value 'inside' the Option
+
+// basic version
+let x2 = match x {
+    Some(val) => Some(val + 1),
+    _ => None,
+};
+
+// equivalent
+let x3 = x.map(|val| val + 1);
+```
+
+[`Option::and_then`](https://doc.rust-lang.org/std/option/enum.Option.html#method.and_then) :
+
+```rust
+fn triple_if_even(n: u32) -> Option<u32> {
+    if n % 2 == 0 {
+        Some(n * 3)
+    } else {
+        None
+    }
+}
+
+let x: Option<u32> = Some(3);
+// Task: pass the values inside x thru triple_if_even
+
+// x.map(triple_if_even) would result in Option<Option<u32>>
+
+// basic version
+let x2 = match x {
+    Some(val) => triple_if_even(val),
+    _ => None,
+};
+
+// equivalent
+let combined = x.and_then(|val| triple_if_even(val));
+// equivalent 2
+let combined2 = x.and_then(triple_if_even);
+```
+
+### Iterators
+
+The `Iterator` trait :
+
+```rust
+pub trait Iterator {
+    type Item;
+    fn next(&mut self) -> Option<Self::Item>;
+
+    // ... other methods
+}
+```
+
+Basic idea:
+
+- `next()` returns the next element and advances iteration
+- when `next()` returns `None` iteration has finished
+- `Item` is an associated type: the implementation specifies the type of the element
+
+Frequently used methods:
+
+- [`map` : transforms using the given closure](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.map)
+- [`filter` : discard elements using closure](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.filter)
+- [`find` : get element if it exists](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.find)
+- [`collect`: gather elements into Vec/HashMap/String/etc](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.collect)
+
+### Threads and Thread Safety
+
+```rust
+thread::spawn(move || {
+    let listener = TcpListener::bind("127.0.0.1:1234").unwrap();
+
+    loop {
+        let conn = listener.accept();
+
+        thread::spawn(move || {
+            let (mut stream, remote) = match conn {
+                Ok(x) => x,
+                _ => return,
+            };
+            println!("new client connected from {}", remote);
+
+            let mut buf = vec![];
+
+            loop {
+                buf.clear();
+                let len = std::io::BufReader::new(&mut stream).read_until(b'\n', &mut buf);
+                if let Ok(0) = len {
+                    // connection closed. goodnight.
+                    return;
+                }
+                if let Err(e) = len {
+                    eprintln!("error receiving from client {}: {:?}", remote, e);
+                    return;
+                }
+
+                let num: i64 = buf
+                    .as_slice()
+                    .map(|bytes| str::from_utf8(bytes))
+                    .and_then(|s| s.parse().ok());
+
+                let reply = num.map(|x| x + 1);
+
+                match reply {
+                    Some(num) => stream.write_all(result.as_bytes()).unwrap(),
+                    None => stream.write_all("request not understood".as_bytes()),
+                }
+                stream.write_all(b"\n").unwrap();
+            }
+        });
+    }
+});
+
+```
+
+#### The `Send` and `Sync` marker traits
+
+`Send` basic idea:
+
+- when an object is created in a function, it only exists on one thread
+  - we can say that thread "owns" the object
+- if the type is safe to move to another thread, the compiler marks it with `Send`
+  - e.g. `let x = 5;` or `let stuff = vec![1, 2, 3];` are both safe to `Send`
+- what is not `Send`:
+  - objects with a reference inside
+  - e.g. `&mut Vec<T>`, a mutable ref to Vec cannot be `Send`, because 2 threads would be able to mutate it at the same time
+
+`Sync` basic idea:
+
+- a `Vec` is not threadsafe:
+  - i.e. it is _not_ safe to mutate it from 2 threads
+  - so it is not safe to have 2 `&mut` references to it
+  - (but it is ok to have many shared references, readonly access is safe)
+- the compiler infers that `Vec` is not `Sync` (i.e. `Vec<T>: !Sync`)
+  - the compiler does not allow mutable access from more than one thread
+- Some basic types are `Sync` and therefore safe
+  - a `std::sync::Mutex<T>` is `Sync`
+  - a `std::sync::Arc<T>` is `Sync`
+  - a `std::sync::atomic::AtomicBool` is `Sync`
+    - but plain `bool` is not
+
+### Serde
+
+```rust
+use serde_json::{Serialize, Deserialize};
+
+#[derive(Serialize, Deserialize)] // this is where the magic happens
+struct TheData {
+    x: u32,
+    s: String,
+    v: Vec<f32>,
+}
+
+let d = TheData { x: 5, s: "abcd".into(), v: vec![1,2,3] };
+
+let s = serde_json::to_string_pretty(&d).expect("serialization failed")
+println!("{}", s);
+
+let recovered: TheData = match serde_json::from_str(&s) {
+    Ok(data) => data,
+    Err(e) => {
+        println!("deserialization error: {:?}", e);
+        return;
+    }
+};
+```
+
+
+## Maybe
+
+### Using `io::Read` and `io::Write` on `slice`
