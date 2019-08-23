@@ -766,6 +766,113 @@ Frequently used methods:
 
 ### Threads and Thread Safety
 
+#### Creating a new thread with spawn
+
+```rust
+use std::thread;
+use std::time::Duration;
+
+let join_handle = thread::spawn(|| {
+    for i in 1..10 {
+        println!("hi number {} from the spawned thread!", i);
+        thread::sleep(Duration::from_millis(1));
+    }
+    123
+});
+
+// optional, block waiting for thread to finish
+match join_handle.join() {
+    Ok(ret) => println!("thread returned {}", ret),
+    Err(e) => println!("thread panicked: {:?}", e),
+}
+```
+
+#### Sending data between threads
+
+```rust
+// the closure for a thread can also capture values
+let exclusive = 4;
+
+let handle_a = thread::spawn(move || {
+    println!("took ownership of {}", exclusive);
+});
+
+//println!("{}", exclusive); // errors, since `exclusive` was moved
+```
+
+Threads can pass messages using channels:
+
+```rust
+use std::sync::mpsc;
+
+let (tx, rx) = mpsc::channel();
+
+let handle_a = thread::spawn(move || { // this captures the tx end
+    for i in 1..10 {
+        println!("sending {}", i);
+        tx.send(i).unwrap();
+    }
+}
+let handle_b = thread::spawn(move || { // this captures the rx end
+    for val in rx {
+        println!("received {}", val);
+    }
+}
+
+handle_a.join().unwrap();
+handle_b.join().unwrap();
+```
+
+#### Sharing data between threads
+
+We cannot share unsyncronized data (see `Sync` explanation below)
+
+```rust
+use std::thread;
+
+let mut v = vec![1, 2, 3];
+
+// THIS WILL NOT COMPILE
+let handle_a = thread::spawn(|| {
+    v.push(4);
+});
+let handle_b = thread::spawn(|| {
+    v.push(4);
+});
+```
+
+But if we create a thread-safe object (like a mutex), we can share it:
+
+```rust
+use std::sync::{Mutex, Arc};
+use std::thread;
+
+fn main() {
+    let counter = Arc::new(Mutex::new(0)); // creates an integer, wrapped in a mutex, wrapped in a shareable Arc
+    let mut handles = vec![];
+
+    for _ in 0..10 {
+        let counter = Arc::clone(&counter); // gets a new handle to the shared mutex
+        let handle = thread::spawn(move || {
+            let mut num = counter.lock().unwrap(); // locks the mutex
+
+            // update data inside the mutex
+            // this can only be done after lock, so it is always safe
+            *num += 1;
+
+            // mutex guard goes out of scope, and the mutex is closed
+        });
+        handles.push(handle);
+    }
+
+    for handle in handles {
+        handle.join().unwrap();
+    }
+
+    println!("Result: {}", *counter.lock().unwrap());
+}
+```
+
 ```rust
 thread::spawn(move || {
     let listener = TcpListener::bind("127.0.0.1:1234").unwrap();
