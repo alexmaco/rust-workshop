@@ -758,6 +758,54 @@ if let Some(3) = some_u8_value {
 
 #### Generic types
 
+- reduce duplication and reusability by parametrizing the type in the definitions of functions, structs, enums
+- examples:
+  - Option\<T>
+  - Result\<T, E>
+  - Vec\<T>
+  - HashMap\<K, V>
+- the compiler generates code for each instantiated type
+
+```rust
+struct Point<T> {
+    x: T,
+    y: T,
+}
+
+fn main() {
+    let point_int = Point{ x: 1, y: 2 };
+    let point_float = Point{ x: 1.2, y: 2.5 };
+    let point_wrong = Point{ x: 1, y: 2.5};     // error: x and y must have the same type
+}
+```
+
+```rust
+// does not work yet: all the possible types T must know how to handle '>'
+fn largest<T>(list: &[T]) -> T {
+    let mut largest = list[0];
+
+    for &item in list.iter() {
+        if item > largest {
+            largest = item;
+        }
+    }
+
+    largest
+}
+
+fn main() {
+    let number_list = vec![34, 50, 25, 100, 65];
+
+    let result = largest(&number_list);
+    println!("The largest number is {}", result);
+
+    let char_list = vec!['y', 'm', 'a', 'q'];
+
+    let result = largest(&char_list);
+    println!("The largest char is {}", result);
+}
+```
+
 #### Traits
 
 #### Tests
