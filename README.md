@@ -725,6 +725,70 @@ if let Some(3) = some_u8_value {
 
 #### Tests
 
+- built-in support for unit tests, no need to include a 3rd party framework
+- a test is a function annotated with the **test** attribute
+  - `#[test]`
+- assertions can be checked with:
+  - `assert!`
+  - `assert_eq!` and `assert_ne!`
+- the tests are run with `cargo test`
+
+```bash
+$ cargo test
+...
+running 3 tests
+test add::tests_1::adds_2_and_2 ... ok
+test add::tests_1::panics_when_called ... ok
+test add::tests_1::panics_when_called_specific_message ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
+```
+
+```rust
+fn add(a: i32, b: i32) -> i32 {
+    a + b
+}
+
+fn panics() {
+    panic!("panic message");
+}
+
+#[cfg(test)]        // the tests sit in a test module
+mod tests_1 {
+    use super::*;   // import everything in the parent module
+
+    #[test]         // test
+    fn adds_2_and_2() {
+        assert!(add(2, 2) == 4);
+        assert_eq!(add(2, 2), 4);   // alternative
+    }
+
+    #[test]
+    #[should_panic]
+    // test passes if the function panics for any reason
+    fn panics_when_called() {
+        panics();
+    }
+
+    #[test]
+    #[should_panic(expected = "panic message")]
+    // test passes if the function panics with the failure message containing the 'expected' text
+    fn panics_when_called_specific_message() {
+        panics();
+    }
+}
+```
+
+##### Exercise (big numbers)
+
+- simulate a 128 bit unsigned integer with 2 64 bit values:
+- define a struct **BigNumber** with the following fields:
+  - low: u64
+  - high: u64
+- the 128 bit number consists of the 2 fields, concatenated (**high**, then **low**)
+- define a function **add** that receives 2 **BigNumber** parameters and returns a third one, which is the sum of the other 2
+- write a set of tests to verify the behavior of the written function for various inputs
+
 ## Day 2 - Usage patterns & Real life applications
 
 ### Conversion traits: `From`, `Into`, `TryFrom`, `TryInto`
