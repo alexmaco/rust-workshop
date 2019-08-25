@@ -562,6 +562,38 @@ println!("user1: {:?}", user1);
 - display the **Rectangle**
 - write a function to compute the area of the **Rectangle**
 
+##### Methods
+
+- functions defined within a context of a structure
+- the first parameter is the structure instance, **self**
+- called using dot, like in other programming languages
+
+```rust
+struct Duration {
+    seconds: u64,
+    description: String,
+}
+
+impl Duration {
+    fn minutes(&self) -> u64 {
+        self.seconds / 60
+    }
+
+
+fn main() {
+    let d = Duration {
+        seconds: 120,
+        description: String::from("test"),
+    };
+
+    println!("{} seconds, {} minutes", d.seconds, d.minutes());
+}
+```
+
+##### Exercise 5 (rectangle area with method)
+
+- change the **area** function from **Exercise 4** to be a method on the struct **Rectangle**
+
 #### Enums
 
 - define the possible values for a type
