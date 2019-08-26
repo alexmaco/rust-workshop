@@ -30,7 +30,7 @@ mod bank {
 ### Importing from a module
 
 - to use things from a module prepend the module name and `::`
-- to avoid writing `module_name::` repeatedly, you can import with `use module_name;:contained thing`
+- to avoid writing `module_name::thing` repeatedly, you can import `thing` with `use module_name::thing`
 
 ```rust
 // for the bank module defined above
