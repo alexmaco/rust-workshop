@@ -52,7 +52,7 @@ The following 2 layouts are equivalent:
 
 ### Single file
 
-Filename: src/bin.rs
+Filename: src/main.rs
 ```rust
 fn main() {
     bank::pay(bank::Payment::Loan);
@@ -85,13 +85,13 @@ Directory tree:
 
 ```
 src/
-|-- bin.rs
+|-- main.rs
 |-- bank.rs
 `-- bank/
     `-- vault.rs
 ```
 
-Filename: src/bin.rs
+Filename: src/main.rs
 ```rust
 mod bank; // this is required - it includes `bank.rs` in the project
 
