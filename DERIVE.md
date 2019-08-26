@@ -92,6 +92,7 @@ let p = Point { x: 0.3, y: 0.67 };
 
 // this now works; p2 is a copy, p was not moved
 let p2 = p;
+println!("{} {}", p, p2);
 ```
 
 </td>
@@ -134,7 +135,7 @@ PartialEq
 
 </td>
 <td>
-comparing objects with `==`
+deep-comparing comparing objects with `==`
 </td>
 <td>
 
@@ -155,4 +156,150 @@ println!("{}", a == b);
 </td>
 </tr>
 
+<tr>
+<td>
+Eq
+</td>
+<td>
+PartialEq
+</td>
+<td>
+marks equality as transitive (total)
+required when using types in a `HashSet` or as keys in a `HashMap`
+</td>
+<td>
+
+see `HashSet` example below
+
+</td>
+</tr>
+
+<tr>
+<td>
+PartialOrd
+</td>
+<td>
+PartialEq
+</td>
+<td>
+deep-comparing comparing objects with `<`, `<=`, `>=` and `>`
+</td>
+<td>
+
+```rust
+#[derive(PartialOrd)]
+struct MyData {
+    v: Vec<u32>,
+    s: String,
+}
+
+let a = MyData { v: vec![1,2,3], s: "abcd".into() };
+let b = MyData { v: vec![1,2,3], s: "xyzw".into() };
+
+// this now works; prints "true"
+println!("{}", a < b);
+```
+
+</td>
+</tr>
+
+</td>
+</tr>
+
+<tr>
+<td>
+Ord
+</td>
+<td>
+PartialOrd
+</td>
+<td>
+marks ordering as transitive (total)
+required when using types in a `BTreeSet` or as keys in a `BTreeMap`
+</td>
+<td>
+
+see `BTreeSet` example below
+
+</td>
+</tr>
+
+<tr>
+<td>
+Hash
+</td>
+<td>
+
+</td>
+<td>
+getting the hash of an object
+required when using types in a `HashSet` or as keys in a `HashMap`
+</td>
+<td>
+
+see `HashSet` example below
+
+</td>
+</tr>
+
+<tr>
+<td>
+Default
+</td>
+<td>
+
+</td>
+<td>
+constructing an object in a basic, "default" state
+</td>
+<td>
+
+```rust
+#[derive(Default)]
+struct MyData {
+    v: Vec<u32>,
+    s: String,
+}
+
+// this now works; v is an empty Vec, and s is an empty String
+let a = MyData::default();
+
+// alternative way to write
+let b: MyData = Default::default();
+```
+
+</td>
+</tr>
+
+
 </tbody>
+
+### HashSet usage
+
+```rust
+#[derive(Hash, Eq, PartialEq)]
+struct MyData {
+    v: Vec<u32>,
+    s: String,
+}
+
+use std::collections::HashSet;
+
+// this now works
+let mut set: HashSet<MyData> = HashSet::new();
+```
+
+### BTreeSet usage
+
+```rust
+#[derive(Eq, PartialEq, Ord, PartialOrd)]
+struct MyData {
+    v: Vec<u32>,
+    s: String,
+}
+
+use std::collections::BTreeSet;
+
+// this now works
+let mut set: BTreeSet<MyData> = BTreeSet::new();
+```
