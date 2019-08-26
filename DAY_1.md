@@ -681,8 +681,6 @@ if let Some(3) = some_u8_value {
 - define an enum for various time units (seconds, minutes, hours etc), each containing an integer value
 - write a function that receives a time value and computes the number of seconds corresponding to it
 
-### Crates
-
 ### Modules
 
 ### Collections
