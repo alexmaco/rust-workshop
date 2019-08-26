@@ -2,7 +2,16 @@
 
 ## Language overview
 
-## Documentation
+## Documentation (reference guides)
+
+- the standard library: https://doc.rust-lang.org/std/index.html
+- search for external crates: https://crates.io/
+- search documentation for a specific crate: https://docs.rs/
+- generate documentation for the current project
+  - `cargo doc`
+- open the generated documentation:
+  - `cargo doc --open`
+  - or open **index.html** (in `target/doc/<project_name>`)
 
 ## Hello world
 
