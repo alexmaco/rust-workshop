@@ -771,6 +771,140 @@ if let Some(3) = some_u8_value {
 
 #### Error handling
 
+- rust requires the programmer to acknowledge the existence of errors and treat all the cases where an error may occur; the code won't compile unless all the error cases are handled
+
+##### Unrecoverable errors (panic!)
+
+- when **panic!** is called, the program prints an error message, does some cleanup and quit
+- panic can be called direclty by our code or indirectly by other elements that we call
+- by default the stacktrace of the program is not displayed at panic; it can be enabled with:
+  - `RUST_BACKTRACE=1 cargo run`
+
+```rust
+fn main() {
+    // direct call
+    panic!("crash and burn");
+
+    // indirect call
+    let v = vec![1, 2, 3];
+
+    v[99];
+}
+```
+
+##### Recoverable errors (Result\<T, E>)
+
+- the **Result** enum is defined in the standard library
+- shortcuts for the case when the error case should cause panic
+  - unwrap
+  - expect (similar to unwrap, allows specifying an error message in case of failure)
+- errors can be propagated using **?**
+  - if the result is **Ok**, the execution continues with the value contained inside
+  - if the result is **Error**, the result is returned from the current function, for the calling code to process it
+  - it must be called inside a function that returns **Result**
+
+```rust
+enum Result<T, E> {
+    Ok(T),          // T is the type of the value returned in case of success
+    Err(E),         // E is the type of the value returned in case of failure
+}
+```
+
+```rust
+use std::fs::File;
+
+fn main() {
+    let f = File::open("hello.txt");
+
+    let f = match f {
+        Ok(file) => file,
+        Err(error) => match error.kind() {
+            ErrorKind::NotFound => match File::create("hello.txt") {
+                Ok(fc) => fc,
+                Err(e) => panic!("Problem creating the file: {:?}", e),
+            },
+            other_error => panic!("Problem opening the file: {:?}", other_error),
+        },
+    };
+}
+```
+
+- unwrap
+
+```rust
+use std::fs::File;
+
+fn main() {
+    let f = File::open("hello.txt").unwrap();
+}
+```
+
+- expect
+
+```rust
+use std::fs::File;
+
+fn main() {
+    let f = File::open("hello.txt").expect("Failed to open hello.txt");
+}
+```
+
+- propagate errors
+
+```rust
+use std::io;
+use std::io::Read;
+use std::fs::File;
+
+fn read_username_from_file() -> Result<String, io::Error> {
+    let f = File::open("hello.txt");
+
+    let mut f = match f {
+        Ok(file) => file,
+        Err(e) => return Err(e),
+    };
+
+    let mut s = String::new();
+
+    match f.read_to_string(&mut s) {
+        Ok(_) => Ok(s),
+        Err(e) => Err(e),
+    }
+}
+```
+
+- simpler and equivalent
+
+```rust
+use std::io;
+use std::io::Read;
+use std::fs::File;
+
+fn read_username_from_file() -> Result<String, io::Error> {
+    let mut f = File::open("hello.txt")?;
+    let mut s = String::new();
+    f.read_to_string(&mut s)?;
+    Ok(s)
+}
+
+// shorter
+fn read_username_from_file() -> Result<String, io::Error> {
+    let mut s = String::new();
+
+    File::open("hello.txt")?.read_to_string(&mut s)?;
+
+    Ok(s)
+}
+
+// even shorter
+use std::io;
+use std::fs;
+
+fn read_username_from_file() -> Result<String, io::Error> {
+    fs::read_to_string("hello.txt")
+}
+```
+
 #### Generic types
 
 - reduce duplication and reusability by parametrizing the type in the definitions of functions, structs, enums
