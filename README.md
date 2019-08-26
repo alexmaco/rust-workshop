@@ -728,10 +728,10 @@ if let Some(3) = some_u8_value {
 #### Conversions
 
 - Sometimes, we have an object of A, and we need to turn it into an object of type B.
-- Conversion is expressed by implementing `From<A>` for B (or, rarely, `Into`)
+- Conversion is expressed by implementing `From<A>` for B (or, rarely, implementing `Into<B>` for A)
 - After we implement `From`, we call the conversion code with `B::from(a)`
 
-If we implement `From`, then `Into` is also automatically implemented.
+If we implement `From<A> for B`, then `Into<B> for A` is also automatically implemented.
 
 Docs:
 
