@@ -1,96 +1,5 @@
 ## Day 2 - Usage patterns & Real life applications
 
-### Conversions
-
-- Sometimes, we have an object of A, and we need to turn it into an object of type B.
-- Conversion is expressed by implementing `From` for B (or, rarely, `Into`)
-- After we implement `From`, we call the conversion code by calling `B::from(a)`
-
-If we implement `From`, then `Into` is also automatically implemented.
-
-Docs:
-
-- From: <https://doc.rust-lang.org/core/convert/trait.From.html>
-- TryFrom: <https://doc.rust-lang.org/core/convert/trait.TryFrom.html>
-
-```rust
-#[derive(Debug)]
-struct Label {
-    text: String,
-    point: Point,
-}
-#[derive(Debug, Clone)]
-struct Point {
-    x: i32,
-    y: i32,
-}
-
-impl From<Point> for Label {
-    fn from(p: Point) -> Self {
-        // return an object of our Self type (aka. Label), constructed from p
-        Self {
-            text: format!("(x={}, y={})", p.x, p.y),
-            point: p,
-        }
-    }
-}
-
-let p = Point { x: 3, y: 4 };
-
-let label_1 = Label::from(p.clone()); // this now works !
-println!("converted: {:?}", label_1);
-
-let label_2: Label = p.clone().into(); // this works automatically
-println!("also converted: {:?}", label_2);
-```
-
-
-```rust
-// some implementations of `From` and `Into` are predefined
-let s1: &str = "text";
-let s2 = String::from(s1); // call impl From<str> for String directly
-let s3: String = s1.into(); // convert s1 into into whatever is needed
-
-let large_val = 12345;
-println!("conversion result: {:?}", u8::try_from(large_val));
-```
-
-#### Conversions that can fail
-
-`From` is for conversions that always work. If our conversion can fail we use `TryFrom`.
-
-```rust
-use std::convert::TryFrom;
-
-struct V4Prefix {
-    value: u32,
-}
-
-#[derive(Debug)]
-struct V4Netmask {
-    value: u32,
-}
-
-impl TryFrom<V4Prefix> for V4Netmask {
-    type Error = String; // we must define the type returned on error
-
-    fn try_from(prefix: V4Prefix) -> Result<Self, Self::Error> {
-        match prefix.value {
-            0..=32 => {
-                let little_endian: u32 = !((1 << (32 - prefix.value)) - 1);
-                let value = little_endian.swap_bytes();
-                Ok(Self { value })
-            }
-            // here, we can defend against invalid prefixes
-            x => Err(format!("{} is too large for an ipv4 netmask", x)),
-        }
-    }
-}
-
-println!("good: {:?}", V4Netmask::try_from(V4Prefix { value: 5 }));
-println!("bad: {:?}", V4Netmask::try_from(V4Prefix { value: 52438 }));
-```
-
 ### Passing Functions and Closures
 
 Functions and closures can be passed around as arguments:
@@ -128,13 +37,16 @@ fn main() {
 }
 ```
 
-### Combinators and Transforms
+### Combinators and transforms
+
+- there are many common and repetitive operations done with `Option`, `Result`, etc.
+- these types provide small functions, to turn several lines of repeated code into a single call
 
 [`Option::map`](https://doc.rust-lang.org/std/option/enum.Option.html#method.map) :
 
 ```rust
 let x: Option<u32> = Some(3);
-// let's change the value 'inside' the Option
+// Task: let's increment the value 'inside' the Option
 
 // basic version
 let x2 = match x {
@@ -142,37 +54,58 @@ let x2 = match x {
     _ => None,
 };
 
-// equivalent
+// equivalent, shorter
 let x3 = x.map(|val| val + 1);
 ```
 
 [`Option::and_then`](https://doc.rust-lang.org/std/option/enum.Option.html#method.and_then) :
 
 ```rust
-fn triple_if_even(n: u32) -> Option<u32> {
+fn correct_half(n: u32) -> Option<u32> {
     if n % 2 == 0 {
-        Some(n * 3)
+        Some(n / 2)
     } else {
-        None
+        None // return nothing instead of rounding values
     }
 }
 
 let x: Option<u32> = Some(3);
-// Task: pass the values inside x thru triple_if_even
+// Task: pass the values inside x thru correct_half
 
-// x.map(triple_if_even) would result in Option<Option<u32>>
+// x.map(correct_half) would result in Option<Option<u32>>
 
 // basic version
 let x2 = match x {
-    Some(val) => triple_if_even(val),
+    Some(val) => correct_half(val),
     _ => None,
 };
 
-// equivalent
-let combined = x.and_then(|val| triple_if_even(val));
-// equivalent 2
+// equivalent, shorter
+let combined = x.and_then(|val| correct_half(val));
+// equivalent, shorter (2)
 let combined2 = x.and_then(triple_if_even);
 ```
+
+[`Option::unwrap_or_else`](https://doc.rust-lang.org/std/option/enum.Option.html#method.unwrap_or_else) :
+
+```rust
+fn get_answer_from_server() -> u32 {
+    56 // just pretend this is complicated
+}
+
+let x = Some(3);
+// Task: get the 3, otherwise, get the answer from the server
+
+// basic version
+let v = match x {
+    Some(v) => v,
+    None => get_answer_from_server(),
+};
+
+// equivalent, shorter
+let v2 = x.unwrap_or_else(|| get_answer_from_server());
+```
+
 
 ### Iterators
 
