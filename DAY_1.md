@@ -938,7 +938,7 @@ for (key, value) in &scores {
 }
 ```
 
-#### Exercise (number of occurrences)
+#### Exercise 7 (number of occurrences)
 
 - declare a vector containing some integers
 - compute the number of occurrences for each element in the vector
@@ -1378,7 +1378,7 @@ mod tests_1 {
 }
 ```
 
-#### Exercise
+#### Exercise 8 (factorial)
 
 - define a function to compute the factorial of n, with argument n received as a signed value
   - if n >= 0 return Some(n!)
