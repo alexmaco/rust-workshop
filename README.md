@@ -725,3 +725,90 @@ if let Some(3) = some_u8_value {
 
 #### Tests
 
+#### Conversions
+
+- Sometimes, we have an object of A, and we need to turn it into an object of type B.
+- Conversion is expressed by implementing `From` for B (or, rarely, `Into`)
+- After we implement `From`, we call the conversion code by calling `B::from(a)`
+
+If we implement `From`, then `Into` is also automatically implemented.
+
+Docs:
+
+- From: <https://doc.rust-lang.org/core/convert/trait.From.html>
+- TryFrom: <https://doc.rust-lang.org/core/convert/trait.TryFrom.html>
+
+```rust
+#[derive(Debug, Clone)]
+enum Coin {
+    Penny,
+    Nickel,
+    Dime,
+    Quarter,
+}
+
+#[derive(Debug)]
+struct Cents(u32); // alternative way to define a struct, like a tuple but named
+
+impl From<Coin> for Cents {
+    fn from(coin: Coin) -> Self {
+        let value = match coin {
+            Coin::Penny => 1,
+            Coin::Nickel => 5,
+            Coin::Dime => 10,
+            Coin::Quarter => 25,
+        };
+
+        // return an object of our Self type (i.e. Cents), constructed from coin
+        Cents(value)
+    }
+}
+
+let coin = Coin::Quarter;
+
+let cents_1 = Cents::from(coin.clone()); // this now works !
+println!("converted: {:?}", cents_1);
+
+let cents_2: Cents = coin.clone().into(); // this works automatically
+println!("also converted: {:?}", cents_2);
+```
+
+Some implementations of `From` and `Into` are predefined, on types like `String` and `&str`
+
+```rust
+let s1: &str = "text";
+let s2 = String::from(s1); // call impl From<str> for String directly
+let s3: String = s1.into(); // convert s1 into into whatever is needed
+
+let large_val = 12345;
+println!("conversion result: {:?}", u8::try_from(large_val));
+```
+
+##### Conversions that can fail
+
+`From` is for conversions that always work. If our conversion can fail we use `TryFrom`.
+
+```rust
+use std::convert::TryFrom;
+
+impl TryFrom<Cents> for Coin {
+    type Error = String; // we must define the type returned on error
+
+    fn try_from(cents: Cents) -> Result<Self, Self::Error> {
+        let Cents(val) = cents;
+        match val {
+            // report the Coin for good values in Ok
+            1 => Ok(Coin::Penny),
+            5 => Ok(Coin::Nickel),
+            10 => Ok(Coin::Dime),
+            25 => Ok(Coin::Quarter),
+
+            // report Err for values that are not coins
+            x => Err(format!("there is no coin that is worth {} cents", x)),
+        }
+    }
+}
+
+println!("good: {:?}", Coin::try_from(Cents(10)));
+println!("bad: {:?}", Coin::try_from(Cents(15)));
+```
