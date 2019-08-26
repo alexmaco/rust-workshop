@@ -1179,3 +1179,23 @@ impl TryFrom<Cents> for Coin {
 println!("good: {:?}", Coin::try_from(Cents(10)));
 println!("bad: {:?}", Coin::try_from(Cents(15)));
 ```
+
+##### Specialized `ToString` conversion
+
+For the common case of converting a type to `String`, there exists the trait [ToString](https://doc.rust-lang.org/std/string/trait.ToString.html).
+
+As in the examples above, it is preferable to implement a known trait, than to have custom conversion functions.
+
+```rust
+use std::string::ToString;
+
+impl ToString for Cents {
+    fn to_string(&self) -> String {
+        format!("{} cents", self.0)
+    }
+}
+
+let out = Cents(45).to_string();
+
+println!("the value is: {}", out);
+```
