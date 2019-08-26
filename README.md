@@ -178,6 +178,21 @@ cargo run
 
 ### Language
 
+#### Variables and mutability
+
+- by default, the variables are immutable (the value cannot be changed after the initialization)
+- the compiler will raise an error if we try to change the value of an immutable variable
+- variables can be declared mutable using **mut**
+
+```rust
+fn main() {
+    let mut x = 5;
+    println!("The value of x is: {}", x);
+    x = 6;  // error if mut is missing from the declaration of x
+    println!("The value of x is: {}", x);
+}
+```
+
 #### Data types
 
 - Rust is a statically typed language
