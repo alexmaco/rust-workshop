@@ -69,4 +69,90 @@ let duplicate = obj.clone();
 </td>
 </tr>
 
+<tr>
+<td>
+Copy
+</td>
+<td>
+Clone
+</td>
+<td>
+automatic bit-copying objects, instead of moving
+</td>
+<td>
+
+```rust
+#[derive(Copy, Clone)]
+struct Point {
+    x: f32,
+    y: f32,
+}
+
+let p = Point { x: 0.3, y: 0.67 };
+
+// this now works; p2 is a copy, p was not moved
+let p2 = p;
+```
+
+</td>
+</tr>
+
+<tr>
+<td>
+Debug
+</td>
+<td>
+
+</td>
+<td>
+debug-printing objects
+</td>
+<td>
+
+```rust
+#[derive(Debug)]
+struct Point {
+    x: f32,
+    y: f32,
+}
+
+let p = Point { x: 0.3, y: 0.67 };
+
+// this now works; notice the {:?} debug-format
+// prints "Point { x: 0.3, y: 0.67 }"
+println!("{:?}", p);
+```
+
+</td>
+</tr>
+
+<tr>
+<td>
+PartialEq
+</td>
+<td>
+
+</td>
+<td>
+comparing objects with `==`
+</td>
+<td>
+
+```rust
+#[derive(PartialEq)]
+struct MyData {
+    v: Vec<u32>,
+    s: String,
+}
+
+let a = MyData { v: vec![1,2,3], s: "abcd".into() };
+let b = MyData { v: vec![1,2,3], s: "xyzw".into() };
+
+// this now works; prints "false"
+println!("{}", a == b);
+```
+
+</td>
+</tr>
+
 </tbody>
