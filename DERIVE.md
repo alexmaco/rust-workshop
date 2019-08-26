@@ -152,7 +152,7 @@ Eq
 PartialEq
 </td>
 <td>
-marks equality as transitive (total)
+marks equality as transitive (total)<br/>
 required when using types in a `HashSet` or as keys in a `HashMap`
 </td>
 <td>
@@ -202,7 +202,7 @@ Ord
 PartialOrd
 </td>
 <td>
-marks ordering as transitive (total)
+marks ordering as transitive (total)<br/>
 required when using types in a `BTreeSet` or as keys in a `BTreeMap`
 </td>
 <td>
@@ -220,7 +220,7 @@ Hash
 
 </td>
 <td>
-getting the hash of an object
+getting the hash of an object<br/>
 required when using types in a `HashSet` or as keys in a `HashMap`
 </td>
 <td>
