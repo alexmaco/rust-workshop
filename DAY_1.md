@@ -606,6 +606,83 @@ fn dangle() -> &String {
 }
 ```
 
+### The Slice Type
+
+#### String slices
+
+- a string slice is a reference to part of a **String**, and it looks like this
+
+```rust
+// string literals are slices; s has type &str
+let s = "Hello, world!";
+
+let s = String::from("hello world");
+let len = s.len();
+
+let hello = &s[0..5];
+let world = &s[6..11];
+
+let slice = &s[0..2];   // 0 can be omitted
+let slice = &s[..2];
+
+let slice = &s[3..len]; // len can be omitted
+let slice = &s[3..];
+
+let slice = &s[0..len]; // len can be omitted
+let slice = &s[..];
+```
+
+- get the first word from a String
+
+```rust
+fn first_word(s: &String) -> &str {
+    let bytes = s.as_bytes();
+
+    for (i, &item) in bytes.iter().enumerate() {
+        if item == b' ' {
+            return &s[0..i];
+        }
+    }
+
+    &s[..]
+}
+```
+
+- it is better to declare the argument as &str, as we can pass both String and slices
+
+```rust
+fn first_word(s: &str) -> &str {
+    ...
+}
+
+fn main() {
+    let my_string = String::from("hello world");
+
+    // first_word works on slices of `String`s
+    let word = first_word(&my_string[..]);
+
+    let my_string_literal = "hello world";
+
+    // first_word works on slices of string literals
+    let word = first_word(&my_string_literal[..]);
+
+    // Because string literals *are* string slices already,
+    // this works too, without the slice syntax!
+    let word = first_word(my_string_literal);
+}
+```
+
+#### Other slices
+
+- slices apply to arrays as well
+- similar to the String slices
+
+```rust
+let a = [1, 2, 3, 4, 5];
+
+let slice = &a[1..3];   // slice has type &[i32]
+```
+
 ### Structs
 
 - similar with tuples, but have names for the fields
