@@ -1,104 +1,12 @@
-# Rust workshop
+# Day 1 - Infrastructure & Basics
 
-## Day 1 - Infrastructure & Basics
+## Language overview
 
-### Language overview
+## Documentation
 
-### Infrastructure
+## Hello world
 
-#### Setup
-
-The Rust compiler (**rustc**), the build and package manager (**cargo**) and other tools can be installed and managed using the **rustup** script
-
-Installing: https://www.rust-lang.org/tools/install
-
-- on Linux/MacOS:
-
-```bash
-curl https://sh.rustup.rs -sSf | sh
-```
-
-- on Windows: Download and run [rustup](https://win.rustup.rs) and follow the instructions
-
-Updating to the latest version:
-
-```bash
-rustup update
-```
-
-Verifying the installed version:
-
-```bash
-rustc --version
-cargo --version
-```
-
-#### IDE
-
-Various [IDEs/text editors](https://areweideyet.com/) can be used to edit Rust source files.
-
-We recommend using [Visual Studio Code](https://code.visualstudio.com/)
-
-Install the **Rust (rls)** extension
-
-- code completion
-- jump to definition, peek definition, find all references, symbol search
-- types and documentation on hover
-- code formatting
-- refactoring (rename, deglob)
-- error squiggles and apply suggestions from errors
-- snippets
-- build tasks
-
-Other useful extensions:
-
-- **Cargo**
-- **Better TOML**
-- **Bracket Pair Colorizer**
-
-#### Tools
-
-##### rustfmt
-
-A tool for formatting Rust code.
-
-Documentation can be found [here](https://github.com/rust-lang/rustfmt)
-
-Install:
-
-```bash
-rustup component add rustfmt
-```
-
-Run in the current directory:
-
-```bash
-cargo fmt
-```
-
-##### clippy
-
-A tool for static checking Rust code using various lints.
-
-Documentation can be found [here](https://github.com/rust-lang/rust-clippy)
-
-Install:
-
-```bash
-rustup component add clippy
-```
-
-Run in the current directory:
-
-```bash
-cargo clippy
-```
-
-#### Documentation
-
-### Hello world
-
-#### Create a new project
+### Create a new project
 
 New projects can be created using **cargo**
 
@@ -110,7 +18,7 @@ cargo new --help    # available options
 cargo new hello_world
 ```
 
-##### hello_world/
+#### hello_world/
 
 ```bash
 .
@@ -119,7 +27,7 @@ cargo new hello_world
     └── main.rs     # source code
 ```
 
-##### Cargo.toml
+#### Cargo.toml
 
 ```toml
 [package]
@@ -133,7 +41,7 @@ edition = "2018"
 [dependencies]
 ```
 
-##### src/main.rs
+#### src/main.rs
 
 ```rust
 fn main() {
@@ -141,7 +49,7 @@ fn main() {
 }
 ```
 
-#### Compile a project
+### Compile a project
 
 ```bash
 cd hello_world
@@ -164,21 +72,21 @@ The files resulting after build
     └── .rustc_info.json
 ```
 
-#### Run the compiled executable
+### Run the compiled executable
 
 ```bash
 target/debug/hello_world
 ```
 
-#### Build and run the executable in a single step
+### Build and run the executable in a single step
 
 ```bash
 cargo run
 ```
 
-### Language
+## Language
 
-#### Variables and mutability
+### Variables and mutability
 
 - by default, the variables are immutable (the value cannot be changed after the initialization)
 - the compiler will raise an error if we try to change the value of an immutable variable
@@ -193,14 +101,14 @@ fn main() {
 }
 ```
 
-#### Data types
+### Data types
 
 - Rust is a statically typed language
 - The compiler can infer types for variables based on their usage
 
 Scalar types:
 
-##### Integer
+#### Integer
 
 - signed values: i8, i16, i32, i64, i128, isize
 - unsigned values: u8, u16, u32, u64, u128, usize
@@ -221,7 +129,7 @@ fn main() {
 }
 ```
 
-##### Floating point (f32, f64)
+#### Floating point (f32, f64)
 
 ```rust
 fn main() {
@@ -230,7 +138,7 @@ fn main() {
 }
 ```
 
-##### Boolean (bool)
+#### Boolean (bool)
 
 ```rust
 fn main() {
@@ -239,7 +147,7 @@ fn main() {
 }
 ```
 
-##### Character (char)
+#### Character (char)
 
 - 4 bytes
 - Unicode Scalar Value
@@ -252,7 +160,7 @@ fn main() {
 }
 ```
 
-##### Tuples (..., ...)
+#### Tuples (..., ...)
 
 ```rust
 fn main() {
@@ -269,7 +177,7 @@ fn main() {
 }
 ```
 
-##### Array [..., ...]
+#### Array [..., ...]
 
 ```rust
 fn main() {
@@ -286,10 +194,11 @@ fn main() {
 }
 ```
 
-##### Exercise 1 (average)
+#### Exercise 1 (average)
 
 - following the above steps, create a new project
 - in main:
+
   - declare 3 numbers
   - compute the **average** of them and store the result in a variable
   - display the result with
@@ -298,7 +207,7 @@ fn main() {
     println!("Result: {}", result);
     ```
 
-#### Functions
+### Functions
 
 - may have a return type or not
 - may have none, one or more parameters
@@ -306,7 +215,7 @@ fn main() {
 - optionally, the body can end in an **expression** (returns a value)
 - `WARNING`: **expressions** do not include ending **semicolon**; if semicolon is added to the end of an expression, it is turned into a **statement** and it won't return any value
 
-##### Function without parameters, no return value
+#### Function without parameters, no return value
 
 ```rust
 // definition
@@ -318,7 +227,7 @@ fn my_func() {
 my_func();
 ```
 
-##### Function with parameters, no return value
+#### Function with parameters, no return value
 
 In a function's signature, the type of the parameters must always be declared.
 
@@ -337,7 +246,7 @@ my_func1(42);
 my_func2(1, 2);
 ```
 
-##### Function with parameters, with return value
+#### Function with parameters, with return value
 
 ```rust
 // definition
@@ -359,13 +268,13 @@ fn my_func2(x: i32) -> bool {
 let result = my_func(0);
 ```
 
-##### Exercise 2 (average with functions)
+#### Exercise 2 (average with functions)
 
 - modify the code from Exercise 1 (average)
 - extract the computing of average in a function
 - call the function for multiple sets of values
 
-#### Conditions (if expressions)
+### Conditions (if expressions)
 
 - **if** is an expression, thus returning a value
   - the returned value is the one returned from the taken branch
@@ -422,9 +331,9 @@ fn main() {
 }
 ```
 
-#### Loops
+### Loops
 
-##### loop
+#### loop
 
 - **infinite loop**: repeats executing the body until explicitly stopped
 - options to stop the execution
@@ -456,7 +365,7 @@ fn iterate_x_times(x: u32) {
 }
 ```
 
-##### while
+#### while
 
 - loop while condition is true, then break
 - equivalent to **loop** with **break** after an **if** that checks the condition
@@ -473,7 +382,7 @@ fn iterate_x_times_while(x: u32) {
 }
 ```
 
-##### for
+#### for
 
 - iterate over a collection's elements
 - equivalent to **while**, checking if there are more elements
@@ -495,12 +404,12 @@ fn iterate_x_times_for(x: u32) {
 }
 ```
 
-##### Exercise 3 (prime numbers)
+#### Exercise 3 (prime numbers)
 
 - define an **array** variable that contains some **u32** values
 - display for each number if it is prime or not (a number is prime if it is divisible only by 1 and itself)
 
-#### Strings
+### Strings
 
 - type: **String**
 
@@ -517,9 +426,9 @@ fn main() {
 }
 ```
 
-#### Ownership
+### Ownership
 
-#### Structs
+### Structs
 
 - similar with tuples, but have names for the fields
 - the whole structure must be declared **mutable** or not; there is no control per field
@@ -570,14 +479,14 @@ println!("user1: {}", user1);   // error
 println!("user1: {:?}", user1);
 ```
 
-##### Exercise 4 (rectangle area)
+#### Exercise 4 (rectangle area)
 
 - define a structure to hold a **Rectangle**
 - instantiate one **Rectangle**
 - display the **Rectangle**
 - write a function to compute the area of the **Rectangle**
 
-##### Methods
+#### Methods
 
 - functions defined within a context of a structure
 - the first parameter is the structure instance, **self**
@@ -605,11 +514,11 @@ fn main() {
 }
 ```
 
-##### Exercise 5 (rectangle area with method)
+#### Exercise 5 (rectangle area with method)
 
 - change the **area** function from **Exercise 4** to be a method on the struct **Rectangle**
 
-#### Enums
+### Enums
 
 - define the possible values for a type
 
@@ -652,7 +561,7 @@ fn main() {
 }
 ```
 
-##### The Option enum
+#### The Option enum
 
 - special enum, widely used
 - alternative to returning a **Null** value
@@ -677,7 +586,7 @@ fn main() {
 }
 ```
 
-#### Pattern matching
+### Pattern matching
 
 - compare a value against possible patterns; the code corresponding to the first pattern that matches is executed
 - returns the value from the branch that was taken
@@ -736,7 +645,7 @@ let six = plus_one(five);
 let none = plus_one(None);
 ```
 
-##### if let
+#### if let
 
 - more concise way to write a match where all branches but one are ignored
 - useful when we want to do something only on one branch, the other being
@@ -758,22 +667,22 @@ if let Some(3) = some_u8_value {
 }
 ```
 
-##### Exercise 6 (time)
+#### Exercise 6 (time)
 
 - define an enum for various time units (seconds, minutes, hours etc), each containing an integer value
 - write a function that receives a time value and computes the number of seconds corresponding to it
 
-#### Crates
+### Crates
 
-#### Modules
+### Modules
 
-#### Collections
+### Collections
 
-#### Error handling
+### Error handling
 
 - rust requires the programmer to acknowledge the existence of errors and treat all the cases where an error may occur; the code won't compile unless all the error cases are handled
 
-##### Unrecoverable errors (panic!)
+#### Unrecoverable errors (panic!)
 
 - when **panic!** is called, the program prints an error message, does some cleanup and quit
 - panic can be called direclty by our code or indirectly by other elements that we call
@@ -792,7 +701,7 @@ fn main() {
 }
 ```
 
-##### Recoverable errors (Result\<T, E>)
+#### Recoverable errors (Result\<T, E>)
 
 - the **Result** enum is defined in the standard library
 - shortcuts for the case when the error case should cause panic
@@ -905,7 +814,7 @@ fn read_username_from_file() -> Result<String, io::Error> {
 }
 ```
 
-#### Generic types
+### Generic types
 
 - reduce duplication and reusability by parametrizing the type in the definitions of functions, structs, enums
 - examples:
@@ -955,7 +864,7 @@ fn main() {
 }
 ```
 
-#### Traits
+### Traits
 
 - describe the shared behavior of types
 - the behavior of a type is the collection of methods that we can call on that type
@@ -1013,7 +922,7 @@ pub trait Summary {
 impl Summary for NewsArticle {}
 ```
 
-##### Trait bounds
+#### Trait bounds
 
 - use traits in functions definitions
 
@@ -1117,7 +1026,7 @@ impl<T: Display + PartialOrd> Pair<T> {
 }
 ```
 
-#### Tests
+### Tests
 
 - built-in support for unit tests, no need to include a 3rd party framework
 - a test is a function annotated with the **test** attribute
@@ -1173,7 +1082,7 @@ mod tests_1 {
 }
 ```
 
-##### Exercise (big numbers)
+#### Exercise (big numbers)
 
 - simulate a 128 bit unsigned integer with 2 64 bit values:
 - define a struct **BigNumber** with the following fields:
@@ -1183,7 +1092,7 @@ mod tests_1 {
 - define a function **add** that receives 2 **BigNumber** parameters and returns a third one, which is the sum of the other 2
 - write a set of tests to verify the behavior of the written function for various inputs
 
-#### Conversions
+### Conversions
 
 - Sometimes, we have an object of A, and we need to turn it into an object of type B.
 - Conversion is expressed by implementing `From<A>` for B (or, rarely, implementing `Into<B>` for A)
@@ -1242,7 +1151,7 @@ let large_val = 12345;
 println!("conversion result: {:?}", u8::try_from(large_val));
 ```
 
-##### Conversions that can fail
+#### Conversions that can fail
 
 `From` is for conversions that always work. If our conversion can fail we use `TryFrom`.
 
