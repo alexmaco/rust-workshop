@@ -1,6 +1,10 @@
-# Day 1 - Infrastructure & Basics
+# Day 1 - Basics
 
-## Language overview
+Examples adapted or taken from the [rust book](https://doc.rust-lang.org/book/ch00-00-introduction.html)
+
+## Online Playground
+
+https://play.rust-lang.org/
 
 ## Documentation (reference guides)
 
