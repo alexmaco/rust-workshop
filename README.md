@@ -178,6 +178,21 @@ cargo run
 
 ### Language
 
+#### Variables and mutability
+
+- by default, the variables are immutable (the value cannot be changed after the initialization)
+- the compiler will raise an error if we try to change the value of an immutable variable
+- variables can be declared mutable using **mut**
+
+```rust
+fn main() {
+    let mut x = 5;
+    println!("The value of x is: {}", x);
+    x = 6;  // error if mut is missing from the declaration of x
+    println!("The value of x is: {}", x);
+}
+```
+
 #### Data types
 
 - Rust is a statically typed language
@@ -562,6 +577,38 @@ println!("user1: {:?}", user1);
 - display the **Rectangle**
 - write a function to compute the area of the **Rectangle**
 
+##### Methods
+
+- functions defined within a context of a structure
+- the first parameter is the structure instance, **self**
+- called using dot, like in other programming languages
+
+```rust
+struct Duration {
+    seconds: u64,
+    description: String,
+}
+
+impl Duration {
+    fn minutes(&self) -> u64 {
+        self.seconds / 60
+    }
+
+
+fn main() {
+    let d = Duration {
+        seconds: 120,
+        description: String::from("test"),
+    };
+
+    println!("{} seconds, {} minutes", d.seconds, d.minutes());
+}
+```
+
+##### Exercise 5 (rectangle area with method)
+
+- change the **area** function from **Exercise 4** to be a method on the struct **Rectangle**
+
 #### Enums
 
 - define the possible values for a type
@@ -711,6 +758,11 @@ if let Some(3) = some_u8_value {
 }
 ```
 
+##### Exercise 6 (time)
+
+- define an enum for various time units (seconds, minutes, hours etc), each containing an integer value
+- write a function that receives a time value and computes the number of seconds corresponding to it
+
 #### Crates
 
 #### Modules
@@ -719,11 +771,417 @@ if let Some(3) = some_u8_value {
 
 #### Error handling
 
+- rust requires the programmer to acknowledge the existence of errors and treat all the cases where an error may occur; the code won't compile unless all the error cases are handled
+
+##### Unrecoverable errors (panic!)
+
+- when **panic!** is called, the program prints an error message, does some cleanup and quit
+- panic can be called direclty by our code or indirectly by other elements that we call
+- by default the stacktrace of the program is not displayed at panic; it can be enabled with:
+  - `RUST_BACKTRACE=1 cargo run`
+
+```rust
+fn main() {
+    // direct call
+    panic!("crash and burn");
+
+    // indirect call
+    let v = vec![1, 2, 3];
+
+    v[99];
+}
+```
+
+##### Recoverable errors (Result\<T, E>)
+
+- the **Result** enum is defined in the standard library
+- shortcuts for the case when the error case should cause panic
+  - unwrap
+  - expect (similar to unwrap, allows specifying an error message in case of failure)
+- errors can be propagated using **?**
+  - if the result is **Ok**, the execution continues with the value contained inside
+  - if the result is **Error**, the result is returned from the current function, for the calling code to process it
+  - it must be called inside a function that returns **Result**
+
+```rust
+enum Result<T, E> {
+    Ok(T),          // T is the type of the value returned in case of success
+    Err(E),         // E is the type of the value returned in case of failure
+}
+```
+
+```rust
+use std::fs::File;
+
+fn main() {
+    let f = File::open("hello.txt");
+
+    let f = match f {
+        Ok(file) => file,
+        Err(error) => match error.kind() {
+            ErrorKind::NotFound => match File::create("hello.txt") {
+                Ok(fc) => fc,
+                Err(e) => panic!("Problem creating the file: {:?}", e),
+            },
+            other_error => panic!("Problem opening the file: {:?}", other_error),
+        },
+    };
+}
+```
+
+- unwrap
+
+```rust
+use std::fs::File;
+
+fn main() {
+    let f = File::open("hello.txt").unwrap();
+}
+```
+
+- expect
+
+```rust
+use std::fs::File;
+
+fn main() {
+    let f = File::open("hello.txt").expect("Failed to open hello.txt");
+}
+```
+
+- propagate errors
+
+```rust
+use std::io;
+use std::io::Read;
+use std::fs::File;
+
+fn read_username_from_file() -> Result<String, io::Error> {
+    let f = File::open("hello.txt");
+
+    let mut f = match f {
+        Ok(file) => file,
+        Err(e) => return Err(e),
+    };
+
+    let mut s = String::new();
+
+    match f.read_to_string(&mut s) {
+        Ok(_) => Ok(s),
+        Err(e) => Err(e),
+    }
+}
+```
+
+- simpler and equivalent
+
+```rust
+use std::io;
+use std::io::Read;
+use std::fs::File;
+
+fn read_username_from_file() -> Result<String, io::Error> {
+    let mut f = File::open("hello.txt")?;
+    let mut s = String::new();
+    f.read_to_string(&mut s)?;
+    Ok(s)
+}
+
+// shorter
+fn read_username_from_file() -> Result<String, io::Error> {
+    let mut s = String::new();
+
+    File::open("hello.txt")?.read_to_string(&mut s)?;
+
+    Ok(s)
+}
+
+// even shorter
+use std::io;
+use std::fs;
+
+fn read_username_from_file() -> Result<String, io::Error> {
+    fs::read_to_string("hello.txt")
+}
+```
+
 #### Generic types
+
+- reduce duplication and reusability by parametrizing the type in the definitions of functions, structs, enums
+- examples:
+  - Option\<T>
+  - Result\<T, E>
+  - Vec\<T>
+  - HashMap\<K, V>
+- the compiler generates code for each instantiated type
+
+```rust
+struct Point<T> {
+    x: T,
+    y: T,
+}
+
+fn main() {
+    let point_int = Point{ x: 1, y: 2 };
+    let point_float = Point{ x: 1.2, y: 2.5 };
+    let point_wrong = Point{ x: 1, y: 2.5};     // error: x and y must have the same type
+}
+```
+
+```rust
+// does not work yet: all the possible types T must know how to handle '>'
+fn largest<T>(list: &[T]) -> T {
+    let mut largest = list[0];
+
+    for &item in list.iter() {
+        if item > largest {
+            largest = item;
+        }
+    }
+
+    largest
+}
+
+fn main() {
+    let number_list = vec![34, 50, 25, 100, 65];
+
+    let result = largest(&number_list);
+    println!("The largest number is {}", result);
+
+    let char_list = vec!['y', 'm', 'a', 'q'];
+
+    let result = largest(&char_list);
+    println!("The largest char is {}", result);
+}
+```
 
 #### Traits
 
+- describe the shared behavior of types
+- the behavior of a type is the collection of methods that we can call on that type
+- group method signatures together (similar to an interface in other languages)
+- when implementing the trait on a type all the methods of the trait must be defined
+- supported cases:
+  - local trait definition, local type definition
+  - local trait definition, external type definition (e.g. implement **Summarize** on **Vec\<T>**)
+  - external trait definition, local type definition (e.g. implement **Display** on **NewsArticle**)
+- unsupported case: external trait definition and external type definition (e.g. implement **Display** on **Vec\<T>**)
+
+```rust
+pub trait Summary {
+    fn summarize(&self) -> String;
+}
+
+pub struct NewsArticle {
+    pub headline: String,
+    pub location: String,
+    pub author: String,
+    pub content: String,
+}
+
+impl Summary for NewsArticle {
+    fn summarize(&self) -> String {
+        format!("{}, by {} ({})", self.headline, self.author, self.location)
+    }
+}
+
+pub struct Tweet {
+    pub username: String,
+    pub content: String,
+    pub reply: bool,
+    pub retweet: bool,
+}
+
+impl Summary for Tweet {
+    fn summarize(&self) -> String {
+        format!("{}: {}", self.username, self.content)
+    }
+}
+```
+
+- default implementations can be provided in the trait definition
+- the implementation on a specific type can skip defining the methods that have default implementations or can override it
+- the default implementation cannot be called from the overriden one
+
+```rust
+pub trait Summary {
+    fn summarize(&self) -> String {
+        String::from("(Read more...)")
+    }
+}
+
+impl Summary for NewsArticle {}
+```
+
+##### Trait bounds
+
+- use traits in functions definitions
+
+```rust
+// these 2 functions are equivalent
+// simpler form (impl trait)
+pub fn notify(item: impl Summary) {
+    println!("Breaking news! {}", item.summarize());
+}
+
+// the more generic form (trait bound); useful if T must be used in more than one place
+pub fn notify<T: Summary>(item: T) {
+    println!("Breaking news! {}", item.summarize());
+}
+```
+
+- specifying multiple trait bounds
+
+```rust
+pub fn notify(item: impl Summary + Display) {
+    ...
+}
+
+pub fn notify<T: Summary + Display>(item: T) {
+    ...
+}
+```
+
+- using the **where** clause to make the declarations clearer
+
+```rust
+fn some_function<T: Display + Clone, U: Clone + Debug>(t: T, u: U) -> i32 {
+    ...
+}
+
+fn some_function<T, U>(t: T, u: U) -> i32
+    where T: Display + Clone,
+          U: Clone + Debug
+{
+    ...
+}
+```
+
+- fix the **largest** function defined previously
+
+```rust
+fn largest<T: PartialOrd + Copy>(list: &[T]) -> T {
+    let mut largest = list[0];
+
+    for &item in list.iter() {
+        if item > largest {
+            largest = item;
+        }
+    }
+
+    largest
+}
+
+fn main() {
+    let number_list = vec![34, 50, 25, 100, 65];
+
+    let result = largest(&number_list);
+    println!("The largest number is {}", result);
+
+    let char_list = vec!['y', 'm', 'a', 'q'];
+
+    let result = largest(&char_list);
+    println!("The largest char is {}", result);
+}
+```
+
+- methods can be conditionally implemented based on the trait bound
+
+```rust
+use std::fmt::Display;
+
+struct Pair<T> {
+    x: T,
+    y: T,
+}
+
+// always implement method 'new' for Pair<T>
+impl<T> Pair<T> {
+    fn new(x: T, y: T) -> Self {
+        Self {
+            x,
+            y,
+        }
+    }
+}
+
+// implement method 'cmd_display' only if T has comparison and printing
+impl<T: Display + PartialOrd> Pair<T> {
+    fn cmp_display(&self) {
+        if self.x >= self.y {
+            println!("The largest member is x = {}", self.x);
+        } else {
+            println!("The largest member is y = {}", self.y);
+        }
+    }
+}
+```
+
 #### Tests
+
+- built-in support for unit tests, no need to include a 3rd party framework
+- a test is a function annotated with the **test** attribute
+  - `#[test]`
+- assertions can be checked with:
+  - `assert!`
+  - `assert_eq!` and `assert_ne!`
+- the tests are run with `cargo test`
+
+```bash
+$ cargo test
+...
+running 3 tests
+test add::tests_1::adds_2_and_2 ... ok
+test add::tests_1::panics_when_called ... ok
+test add::tests_1::panics_when_called_specific_message ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
+```
+
+```rust
+fn add(a: i32, b: i32) -> i32 {
+    a + b
+}
+
+fn panics() {
+    panic!("panic message");
+}
+
+#[cfg(test)]        // the tests sit in a test module
+mod tests_1 {
+    use super::*;   // import everything in the parent module
+
+    #[test]         // test
+    fn adds_2_and_2() {
+        assert!(add(2, 2) == 4);
+        assert_eq!(add(2, 2), 4);   // alternative
+    }
+
+    #[test]
+    #[should_panic]
+    // test passes if the function panics for any reason
+    fn panics_when_called() {
+        panics();
+    }
+
+    #[test]
+    #[should_panic(expected = "panic message")]
+    // test passes if the function panics with the failure message containing the 'expected' text
+    fn panics_when_called_specific_message() {
+        panics();
+    }
+}
+```
+
+##### Exercise (big numbers)
+
+- simulate a 128 bit unsigned integer with 2 64 bit values:
+- define a struct **BigNumber** with the following fields:
+  - low: u64
+  - high: u64
+- the 128 bit number consists of the 2 fields, concatenated (**high**, then **low**)
+- define a function **add** that receives 2 **BigNumber** parameters and returns a third one, which is the sum of the other 2
+- write a set of tests to verify the behavior of the written function for various inputs
 
 #### Conversions
 
