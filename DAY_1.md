@@ -437,6 +437,171 @@ fn main() {
 
 ### Ownership
 
+- ownership enables Rust to make memory safety guarantees without needing a garbage collector
+- none of the ownership features slow down the program while running
+- ownership rules
+  - each value in Rust has a variable that’s called its owner
+  - there can only be one owner at a time
+  - when the owner goes out of scope, the value will be dropped
+- the scope of a variable is delimited by curly braces `{ }`
+- the simple types are copied instead of moved (integer, float, boolean etc)
+
+```rust
+let s1 = String::from("hello");
+let s2 = s1;    // s1 is "moved" into s2; s1 is not valid any more
+
+println!("{}, world!", s1);     // error: value used after move
+```
+
+```rust
+let s1 = String::from("hello");
+let s2 = s1.clone();                    // s2 contains a deep copy of s1
+
+println!("s1 = {}, s2 = {}", s1, s2);
+```
+
+- passing as argument to a function moves the value into the function
+
+```rust
+fn main() {
+    let s = String::from("hello");  // s comes into scope
+
+    takes_ownership(s);             // s's value moves into the function...
+                                    // ... and so is no longer valid here
+
+    let x = 5;                      // x comes into scope
+
+    makes_copy(x);                  // x would move into the function,
+                                    // but i32 is Copy, so it’s okay to still
+                                    // use x afterward
+
+} // Here, x goes out of scope, then s. But because s's value was moved, nothing
+  // special happens.
+
+fn takes_ownership(some_string: String) { // some_string comes into scope
+    println!("{}", some_string);
+} // Here, some_string goes out of scope and `drop` is called. The backing
+  // memory is freed.
+
+fn makes_copy(some_integer: i32) { // some_integer comes into scope
+    println!("{}", some_integer);
+} // Here, some_integer goes out of scope. Nothing special happens.
+```
+
+- returning a value moves the ownership to the caller; so values can be moved into a function and then returned so the ownership is back to the calling code
+
+```rust
+fn main() {
+    let s1 = gives_ownership();         // gives_ownership moves its return
+                                        // value into s1
+
+    let s2 = String::from("hello");     // s2 comes into scope
+
+    let s3 = takes_and_gives_back(s2);  // s2 is moved into
+                                        // takes_and_gives_back, which also
+                                        // moves its return value into s3
+} // Here, s3 goes out of scope and is dropped. s2 goes out of scope but was
+  // moved, so nothing happens. s1 goes out of scope and is dropped.
+
+fn gives_ownership() -> String {             // gives_ownership will move its
+                                             // return value into the function
+                                             // that calls it
+
+    let some_string = String::from("hello"); // some_string comes into scope
+
+    some_string                              // some_string is returned and
+                                             // moves out to the calling
+                                             // function
+}
+
+// takes_and_gives_back will take a String and return one
+fn takes_and_gives_back(a_string: String) -> String { // a_string comes into
+                                                      // scope
+
+    a_string  // a_string is returned and moves out to the calling function
+}
+```
+
+### References and Borrowing
+
+- sometimes a function does not need to get the ownership of a value if it only wants to do some processing based on it
+- a reference to the value can be passed to the function, the owner remaining the calling code; this is called borrowing
+- references are immutable by default: **&T**
+- a reference can be declared mutable with **&mut T**
+- restriction: there cannot be mutable and immutable references to a value at the same time; otherwise, code that has an immutable reference cannot assume that the value will never change
+  - any number of immutable references can exist at any time
+  - a single mutable reference can exist at any time
+  - this is enforced by the compiler
+
+```rust
+fn main() {
+    let s1 = String::from("hello");
+
+    let len = calculate_length(&s1);
+
+    println!("The length of '{}' is {}.", s1, len);
+}
+
+fn calculate_length(s: &String) -> usize { // s is a reference to a String
+    s.len()
+} // Here, s goes out of scope. But because it does not have ownership of what
+  // it refers to, nothing happens.
+```
+
+- mutable references
+
+```rust
+fn main() {
+    let mut s = String::from("hello");
+
+    change(&mut s);
+}
+
+fn change(some_string: &mut String) {
+    some_string.push_str(", world");
+}
+```
+
+- try to get both mutable and immutable references to a value
+
+```rust
+let mut s = String::from("hello");
+
+let r1 = &s; // no problem
+let r2 = &s; // no problem
+let r3 = &mut s; // BIG PROBLEM
+
+println!("{}, {}, and {}", r1, r2, r3);
+```
+
+- references live as long as they are used
+
+```rust
+let mut s = String::from("hello");
+
+let r1 = &s; // no problem
+let r2 = &s; // no problem
+println!("{} and {}", r1, r2);
+// r1 and r2 are no longer used after this point
+
+let r3 = &mut s; // no problem
+println!("{}", r3);
+```
+
+- dangling references are not allowed; the compiler ensures that the owner variable lives at least as long as all the references to it
+
+```rust
+fn main() {
+    let reference_to_nothing = dangle();
+}
+
+fn dangle() -> &String {
+    let s = String::from("hello");
+
+    &s          // error: this reference would be dangling when s goes out of scope
+}
+```
+
 ### Structs
 
 - similar with tuples, but have names for the fields
@@ -572,8 +737,8 @@ fn main() {
 
 #### The Option enum
 
-- special enum, widely used
-- alternative to returning a **Null** value
+- an enum provided in the standard library, widely used
+- the way to return a **Null** value
 - **Null** means the value is not present, not a value that is invalid
 
 ```rust
@@ -680,8 +845,6 @@ if let Some(3) = some_u8_value {
 
 - define an enum for various time units (seconds, minutes, hours etc), each containing an integer value
 - write a function that receives a time value and computes the number of seconds corresponding to it
-
-### Crates
 
 ### Modules
 
