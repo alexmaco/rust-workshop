@@ -2,7 +2,16 @@
 
 ## Language overview
 
-## Documentation
+## Documentation (reference guides)
+
+- the standard library: https://doc.rust-lang.org/std/index.html
+- search for external crates: https://crates.io/
+- search documentation for a specific crate: https://docs.rs/
+- generate documentation for the current project
+  - `cargo doc`
+- open the generated documentation:
+  - `cargo doc --open`
+  - or open **index.html** (in `target/doc/<project_name>`)
 
 ## Hello world
 
@@ -677,6 +686,97 @@ if let Some(3) = some_u8_value {
 ### Modules
 
 ### Collections
+
+#### Vector: Vec\<T>
+
+- stores elements of the same type, contiguous in the memory
+- if multiple types need to be stored in a vector, a vector of **enum** can be used (with inner types)
+
+```rust
+
+// create an empty vector
+let v1: Vec<i32> = Vec::new();
+
+// create a vector with initial values
+let v2 = vec![1, 2, 3];
+
+// insert elements
+let mut v2 = Vec::new();
+
+v2.push(5);
+v2.push(6);
+v2.push(7);
+v2.push(8);
+
+// remove last element
+match v2.pop() {
+    Some(last) => println!("The last element was {}", last),
+    None => println!("Empty vector"),
+}
+
+// access elements
+let third: &i32 = &v2[2];   // crash if index is out of bounds
+println!("The third element is {}", third);
+
+match v2.get(2) {           // returns None if index is out of bounds
+    Some(third) => println!("The third element is {}", third),
+    None => println!("There is no third element."),
+}
+
+// iterate over the values
+let v3 = vec![100, 32, 57];
+for i in &v3 {
+    println!("{}", i);
+}
+
+// iterate and modify each element in the vector
+let mut v4 = vec![100, 32, 57];
+for i in &mut v4 {
+    *i += 50;   // add 50 to each element
+}
+```
+
+#### Hash Map: HashMap\<K, V>
+
+- stores a mapping of keys of type **K** to values of type **V**
+- uses a hashing function to determine the place for a specific element
+- custom types can be used as keys; the **Hash** trait must be implemented (usually via #[derive(Hash)])
+
+```rust
+use std::collections::HashMap;
+
+// create an empty map
+let mut scores = HashMap::new();
+
+// insert elements
+scores.insert(String::from("Blue"), 10);
+scores.insert(String::from("Yellow"), 50);
+
+// overwrite values
+scores.insert(String::from("Blue"), 25);
+
+// insert only if the key has no value
+scores.entry(String::from("Yellow")).or_insert(50);
+scores.entry(String::from("Green")).or_insert(50);
+
+// remove elements
+let team_name1 = String::from("Green");
+scores.remove(&team_name1);  // returns an Option<V>
+
+// access values
+let team_name2 = String::from("Blue");
+let score = scores.get(&team_name2);     // returns an Option<&V>
+
+// iterate through the values
+for (key, value) in &scores {
+    println!("{}: {}", key, value);     // the order is arbitrary
+}
+```
+
+#### Exercise (number of occurrences)
+
+- declare a vector containing some integers
+- compute the number of occurrences for each element in the vector
 
 ### Error handling
 
