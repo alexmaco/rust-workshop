@@ -5,8 +5,8 @@
 ## Documentation (reference guides)
 
 - the standard library: https://doc.rust-lang.org/std/index.html
-- search for external crates: https://crates.io/
-- search documentation for a specific crate: https://docs.rs/
+- search for crates: https://crates.io/
+- read documentation for a specific crate: https://docs.rs/
 - generate documentation for the current project
   - `cargo doc`
 - open the generated documentation:
@@ -103,7 +103,7 @@ cargo run
 
 ```rust
 fn main() {
-    let mut x = 5;
+    let /*mut*/ x = 5;
     println!("The value of x is: {}", x);
     x = 6;  // error if mut is missing from the declaration of x
     println!("The value of x is: {}", x);
@@ -443,7 +443,7 @@ fn main() {
   - each value in Rust has a variable that’s called its owner
   - there can only be one owner at a time
   - when the owner goes out of scope, the value will be dropped
-- the scope of a variable is delimited by curly braces `{ }`
+- the scope of a variable starts with the declaration and ends with the closing curly brace `}`
 - the simple types are copied instead of moved (integer, float, boolean etc)
 
 ```rust
@@ -662,8 +662,8 @@ println!("user1: {:?}", user1);
 
 #### Methods
 
-- functions defined within a context of a structure
-- the first parameter is the structure instance, **self**
+- functions defined within the context of a structure
+- the first parameter can be the structure instance, **self**
 - called using dot, like in other programming languages
 
 ```rust
@@ -676,7 +676,7 @@ impl Duration {
     fn minutes(&self) -> u64 {
         self.seconds / 60
     }
-
+}
 
 fn main() {
     let d = Duration {
@@ -694,7 +694,7 @@ fn main() {
 
 ### Enums
 
-- define the possible values for a type
+- enumerates the possible values for a type
 
 ```rust
 // declaration
@@ -738,8 +738,8 @@ fn main() {
 #### The Option enum
 
 - an enum provided in the standard library, widely used
-- the way to return a **Null** value
-- **Null** means the value is not present, not a value that is invalid
+- the way to express the absence of a value (equivalent to **null** in other languages)
+- **None** means the value of type T is not present, cannot be used as a valid value
 
 ```rust
 // T is replaced with any type we need when using the enum
@@ -763,10 +763,10 @@ fn main() {
 ### Pattern matching
 
 - compare a value against possible patterns; the code corresponding to the first pattern that matches is executed
-- returns the value from the branch that was taken
-- all the branches must return values of the same type
 - the compiler checks that all the possible cases are handled
 - useful for destructuring types
+- returns the value from the branch that was taken
+- all the branches must return values of the same type
 
 ```rust
 enum Coin {
@@ -843,10 +843,8 @@ if let Some(3) = some_u8_value {
 
 #### Exercise 6 (time)
 
-- define an enum for various time units (seconds, minutes, hours etc), each containing an integer value
-- write a function that receives a time value and computes the number of seconds corresponding to it
-
-### Modules
+- define an enum **Time** for various time units (seconds, minutes, hours etc), each containing an integer value
+- write a function that receives a **Time** value and computes the number of seconds corresponding to it
 
 ### Collections
 
@@ -856,7 +854,6 @@ if let Some(3) = some_u8_value {
 - if multiple types need to be stored in a vector, a vector of **enum** can be used (with inner types)
 
 ```rust
-
 // create an empty vector
 let v1: Vec<i32> = Vec::new();
 
@@ -888,13 +885,13 @@ match v2.get(2) {           // returns None if index is out of bounds
 
 // iterate over the values
 let v3 = vec![100, 32, 57];
-for i in &v3 {
+for i in v3.iter() {
     println!("{}", i);
 }
 
 // iterate and modify each element in the vector
 let mut v4 = vec![100, 32, 57];
-for i in &mut v4 {
+for i in v4.iter_mut() {
     *i += 50;   // add 50 to each element
 }
 ```
@@ -903,6 +900,7 @@ for i in &mut v4 {
 
 - stores a mapping of keys of type **K** to values of type **V**
 - uses a hashing function to determine the place for a specific element
+  - the order of the elements may appear random
 - custom types can be used as keys; the **Hash** trait must be implemented (usually via #[derive(Hash)])
 
 ```rust
@@ -948,7 +946,7 @@ for (key, value) in &scores {
 #### Unrecoverable errors (panic!)
 
 - when **panic!** is called, the program prints an error message, does some cleanup and quit
-- panic can be called direclty by our code or indirectly by other elements that we call
+- panic can be called directly by our code or indirectly by other code that we call
 - by default the stacktrace of the program is not displayed at panic; it can be enabled with:
   - `RUST_BACKTRACE=1 cargo run`
 
@@ -957,9 +955,9 @@ fn main() {
     // direct call
     panic!("crash and burn");
 
-    // indirect call
     let v = vec![1, 2, 3];
 
+    // indirect call to panic!
     v[99];
 }
 ```
@@ -970,6 +968,7 @@ fn main() {
 - shortcuts for the case when the error case should cause panic
   - unwrap
   - expect (similar to unwrap, allows specifying an error message in case of failure)
+- **unwrap** and **expect** should be used when prototyping or in test code
 - errors can be propagated using **?**
   - if the result is **Ok**, the execution continues with the value contained inside
   - if the result is **Error**, the result is returned from the current function, for the calling code to process it
@@ -1079,7 +1078,7 @@ fn read_username_from_file() -> Result<String, io::Error> {
 
 ### Generic types
 
-- reduce duplication and reusability by parametrizing the type in the definitions of functions, structs, enums
+- reduce duplication and increases reusability by parametrizing the type in the definitions of functions, structs, enums
 - examples:
   - Option\<T>
   - Result\<T, E>
@@ -1097,6 +1096,36 @@ fn main() {
     let point_int = Point{ x: 1, y: 2 };
     let point_float = Point{ x: 1.2, y: 2.5 };
     let point_wrong = Point{ x: 1, y: 2.5};     // error: x and y must have the same type
+}
+```
+
+- define functions to compute the largest element in an array of
+  - i32
+  - char
+
+```rust
+fn largest_i32(list: &[i32]) -> i32 {
+    let mut largest = list[0];
+
+    for &item in list.iter() {
+        if item > largest {
+            largest = item;
+        }
+    }
+
+    largest
+}
+
+fn largest_char(list: &[char]) -> char {
+    let mut largest = list[0];
+
+    for &item in list.iter() {
+        if item > largest {
+            largest = item;
+        }
+    }
+
+    largest
 }
 ```
 
@@ -1173,7 +1202,7 @@ impl Summary for Tweet {
 
 - default implementations can be provided in the trait definition
 - the implementation on a specific type can skip defining the methods that have default implementations or can override it
-- the default implementation cannot be called from the overriden one
+- the default implementation cannot be called from the overridden one
 
 ```rust
 pub trait Summary {
@@ -1232,7 +1261,7 @@ fn some_function<T, U>(t: T, u: U) -> i32
 - fix the **largest** function defined previously
 
 ```rust
-fn largest<T: PartialOrd + Copy>(list: &[T]) -> T {
+fn largest<T: PartialOrd>(list: &[T]) -> &T {
     let mut largest = list[0];
 
     for &item in list.iter() {
@@ -1257,7 +1286,7 @@ fn main() {
 }
 ```
 
-- methods can be conditionally implemented based on the trait bound
+- advanced: methods can be conditionally implemented based on the trait bound
 
 ```rust
 use std::fmt::Display;
@@ -1338,30 +1367,26 @@ mod tests_1 {
 
     #[test]
     #[should_panic(expected = "panic message")]
-    // test passes if the function panics with the failure message containing the 'expected' text
+    // test passes if the function panics with the failure message containing the 'panic message' text
     fn panics_when_called_specific_message() {
         panics();
     }
 }
 ```
 
-#### Exercise (big numbers)
+#### Exercise
 
-- simulate a 128 bit unsigned integer with 2 64 bit values:
-- define a struct **BigNumber** with the following fields:
-  - low: u64
-  - high: u64
-- the 128 bit number consists of the 2 fields, concatenated (**high**, then **low**)
-- define a function **add** that receives 2 **BigNumber** parameters and returns a third one, which is the sum of the other 2
+- define a function to compute the factorial of n, with argument n received as a signed value
+  - if n >= 0 return Some(n!)
+  - if n < 0 return None
 - write a set of tests to verify the behavior of the written function for various inputs
 
 ### Conversions
 
 - Sometimes, we have an object of A, and we need to turn it into an object of type B.
 - Conversion is expressed by implementing `From<A>` for B (or, rarely, implementing `Into<B>` for A)
+  - If we implement `From<A> for B`, then `Into<B> for A` is also automatically implemented.
 - After we implement `From`, we call the conversion code with `B::from(a)`
-
-If we implement `From<A> for B`, then `Into<B> for A` is also automatically implemented.
 
 Docs:
 
@@ -1369,7 +1394,7 @@ Docs:
 - TryFrom: <https://doc.rust-lang.org/core/convert/trait.TryFrom.html>
 
 ```rust
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 enum Coin {
     Penny,
     Nickel,
@@ -1394,12 +1419,10 @@ impl From<Coin> for Cents {
     }
 }
 
-let coin = Coin::Quarter;
-
-let cents_1 = Cents::from(coin.clone()); // this now works !
+let cents_1 = Cents::from(Coin::Quarter); // Cents::from works !
 println!("converted: {:?}", cents_1);
 
-let cents_2: Cents = coin.clone().into(); // this works automatically
+let cents_2: Cents = Coin::Penny.into(); // .into() works automatically
 println!("also converted: {:?}", cents_2);
 ```
 
@@ -1425,8 +1448,7 @@ impl TryFrom<Cents> for Coin {
     type Error = String; // we must define the type returned on error
 
     fn try_from(cents: Cents) -> Result<Self, Self::Error> {
-        let Cents(val) = cents;
-        match val {
+        match cents.0 {
             // report the Coin for good values in Ok
             1 => Ok(Coin::Penny),
             5 => Ok(Coin::Nickel),

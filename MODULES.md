@@ -53,6 +53,7 @@ The following 2 layouts are equivalent:
 ### Single file
 
 Filename: src/main.rs
+
 ```rust
 fn main() {
     bank::pay(bank::Payment::Loan);
@@ -73,7 +74,7 @@ mod bank {
 
     mod vault {
         pub fn transfer(amount: u32, where: &str) {
-            println!("transfering {} to {}", amount, where);
+            println!("transferring {} to {}", amount, where);
         }
     }
 }
@@ -92,6 +93,7 @@ src/
 ```
 
 Filename: src/main.rs
+
 ```rust
 mod bank; // this is required - it includes `bank.rs` in the project
 
@@ -101,6 +103,7 @@ fn main() {
 ```
 
 Filename: src/bank.rs
+
 ```rust
 mod vault; // this is required - it includes `bank/vault.rs` in the project
 
@@ -118,17 +121,17 @@ pub enum Payment {
 ```
 
 Filename: src/bank/vault.rs
+
 ```rust
 pub fn transfer(amount: u32, where: &str) {
-    println!("transfering {} to {}", amount, where);
+    println!("transferring {} to {}", amount, where);
 }
 ```
-
 
 ## Modules control visibility
 
 - by default, everything in a module is private to the outside
-    - everything, including struct fields
+  - everything, including struct fields
 - to make things visible to the parent module, use the keyword `pub` before the item
 
 ```rust
@@ -170,5 +173,3 @@ mod bank {
     }
 }
 ```
-
-### Visibility in submodules

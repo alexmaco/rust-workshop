@@ -1,4 +1,4 @@
-Summary of [Appendinx C from the book](https://doc.rust-lang.org/book/appendix-03-derivable-traits.html)
+Summary of [Appendix C from the book](https://doc.rust-lang.org/book/appendix-03-derivable-traits.html)
 
 These are the standard traits we can `#[derive(NameOfTheTrait)]`
 
@@ -123,7 +123,7 @@ PartialEq
 
 </td>
 <td>
-deep-comparing comparing objects with `==`
+deep-comparing objects with `==`
 </td>
 <td>
 
@@ -153,11 +153,11 @@ PartialEq
 </td>
 <td>
 marks equality as transitive (total)<br/>
-required when using types in a `HashSet` or as keys in a `HashMap`
+required when using types in a <b>HashSet</b> or as keys in a <b>HashMap</b>
 </td>
 <td>
 
-see `HashSet` example below
+see <b>HashSet</b> example below
 
 </td>
 </tr>
@@ -203,11 +203,11 @@ PartialOrd
 </td>
 <td>
 marks ordering as transitive (total)<br/>
-required when using types in a `BTreeSet` or as keys in a `BTreeMap`
+required when using types in a <b>BTreeSet</b> or as keys in a <b>BTreeMap</b>
 </td>
 <td>
 
-see `BTreeSet` example below
+see <b>BTreeSet</b> example below
 
 </td>
 </tr>
@@ -221,11 +221,11 @@ Hash
 </td>
 <td>
 getting the hash of an object<br/>
-required when using types in a `HashSet` or as keys in a `HashMap`
+required when using types in a <b>HashSet</b> or as keys in a <b>HashMap</b>
 </td>
 <td>
 
-see `HashSet` example below
+see <b>HashSet</b> example below
 
 </td>
 </tr>
@@ -258,7 +258,6 @@ let b: MyData = Default::default();
 
 </td>
 </tr>
-
 
 </tbody>
 </table>
