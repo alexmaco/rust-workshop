@@ -728,8 +728,8 @@ if let Some(3) = some_u8_value {
 #### Conversions
 
 - Sometimes, we have an object of A, and we need to turn it into an object of type B.
-- Conversion is expressed by implementing `From` for B (or, rarely, `Into`)
-- After we implement `From`, we call the conversion code by calling `B::from(a)`
+- Conversion is expressed by implementing `From<A>` for B (or, rarely, `Into`)
+- After we implement `From`, we call the conversion code with `B::from(a)`
 
 If we implement `From`, then `Into` is also automatically implemented.
 
@@ -777,8 +777,8 @@ Some implementations of `From` and `Into` are predefined, on types like `String`
 
 ```rust
 let s1: &str = "text";
-let s2 = String::from(s1); // call impl From<str> for String directly
-let s3: String = s1.into(); // convert s1 into into whatever is needed
+let s2 = String::from(s1); // call impl From<str> for String
+let s3: String = s1.into(); // convert s1 into whatever is needed
 
 let large_val = 12345;
 println!("conversion result: {:?}", u8::try_from(large_val));
@@ -803,7 +803,7 @@ impl TryFrom<Cents> for Coin {
             10 => Ok(Coin::Dime),
             25 => Ok(Coin::Quarter),
 
-            // report Err for values that are not coins
+            // report Err (of the type defined above, String) for values that are not coins
             x => Err(format!("there is no coin that is worth {} cents", x)),
         }
     }
