@@ -125,4 +125,50 @@ pub fn transfer(amount: u32, where: &str) {
 ```
 
 
-## Modules can make things private
+## Modules control visibility
+
+- by default, everything in a module is private to the outside
+    - everything, including struct fields
+- to make things visible to the parent module, use the keyword `pub` before the item
+
+```rust
+fn main() {
+    let mut trn = bank::Transaction::new(20);
+    //trn.euros = 0; // error: the euros field is private
+    trn.description = String::from("just a small donation");
+
+    bank::send(trn);
+}
+
+mod bank {
+    // this struct is public
+    pub struct Transaction {
+        pub description: String, // this can be read and changed
+        euros: u32, // this is private to the module
+        state: State, // this is also private
+    }
+
+    // this is private to the module
+    enum State {
+        Pending,
+        Resolved
+    }
+
+    impl Transaction {
+        // the `new` function is also public so we can use it from `main`
+        pub fn new(euros: u32) -> Self {
+            Self { euros, description: "".into(), state: State::Pending }
+        }
+    }
+
+    pub fn send(mut t: Transaction) {
+        // this is inside the module, so we can access `description`
+        println!("sending {} euros; ({})", t.euros, t.description);
+
+        // we can also use the private types here
+        t.state = State::Resolved;
+    }
+}
+```
+
+### Visibility in submodules
