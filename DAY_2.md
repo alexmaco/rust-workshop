@@ -133,6 +133,42 @@ Frequently used methods:
 - [`find` : get element if it exists](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.find)
 - [`collect`: gather elements into Vec/HashMap/String/etc](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.collect)
 
+**References**
+
+#### Iterator examples
+
+```rust
+let v: Vec<u32> = vec![1, 2, 3];
+
+// frequently, collect()'ing from iterators requires
+// annotating the type of the destination collection
+// the compiler often suggest the annotation
+let doubled: Vec<u32> = v.iter()
+    .map(|x| x * x)
+    .collect();
+```
+
+Usual methods to start iteration:
+
+- `iter()` will iterate with references to the original elements
+- `into_iter()` will consume the Vec, and iterate the actual elements
+
+```rust
+// this leaves v still alive, and iterates with references
+let even: Vec<u32> = v.iter()
+    .filter(|x| *x % 2 == 0) // dereference x, because x is a reference
+    .map(|x| *x) // make a copy of x, to create a vector of value
+    .collect();
+
+// this consumes v, and iterates with values
+let halves: Vec<u32> = v.into_iter()
+    .map(|x| x / 2)
+    .collect();
+```
+
+Maps and sets (like HashMap) can be used with iterators
+
+
 ### Threads and Thread Safety
 
 #### Creating a new thread with spawn
