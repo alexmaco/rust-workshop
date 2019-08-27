@@ -284,7 +284,6 @@ fn main() {
 }
 ```
 
-
 ### Serde
 
 - the [**serde_json**](https://crates.io/crates/serde_json) crate has support for (de)serialization to/from JSON
@@ -295,22 +294,24 @@ Add in **Cargo.toml**:
 
 ```toml
 [dependencies]
+serde_derive = "1.0"
 serde_json = "1.0"
 ```
 
 ```rust
-use serde_json::{Serialize, Deserialize};
+use serde_derive::{Serialize, Deserialize};
+use serde_json;
 
 #[derive(Serialize, Deserialize)] // this is where the magic happens
 struct TheData {
     x: u32,
     s: String,
-    v: Vec<f32>,
+    v: Vec<i32>,
 }
 
 let d = TheData { x: 5, s: "abcd".into(), v: vec![1,2,3] };
 
-let s = serde_json::to_string_pretty(&d).expect("serialization failed")
+let s = serde_json::to_string_pretty(&d).expect("serialization failed");
 println!("{}", s);
 
 let recovered: TheData = match serde_json::from_str(&s) {
