@@ -4,12 +4,12 @@
 
 1. We have file with a single word per line. Read the file.
 1. Use a `HashMap` to count the number of times each word appears.
-1. Print the words and their appearance in 2 columns: first the number of occurences, then the word itself
-1. Change the program to sort the words by number of occurence (ascending or descending)
+1. Print the words and their appearance in 2 columns: first the number of occurrences, then the word itself
+1. Change the program to sort the words by number of occurrence (ascending or descending)
 
 ## Shapes and intersections
 
-Note: the checks here don't have to be 100% mathematically correct. The goal is to use traits to compose fuctionality.
+Note: the checks here don't have to be 100% mathematically correct. The goal is to use traits to compose functionality.
 
 ### Core and tests
 
