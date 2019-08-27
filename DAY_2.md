@@ -131,7 +131,7 @@ println!("{:?}", x);
 Other useful combinators on **Option** and **Result**:
 
 - **Result::map**, and **and_then** : similar to the Option methods
-- **Result::ok** : transform a **Result<T, E>** into an **Option<T>** (keep the value, throw away the error)
+- **Result::ok** : transform a **Result<T, E>** into an **Option\<T>** (keep the value, throw away the error)
 - **Option::ok_or**, and **ok_or_else** : transform an Option to Result, optionally setting an error
 
 
