@@ -204,8 +204,63 @@ let halves: Vec<u32> = v.into_iter()
     .collect();
 ```
 
-Maps and sets (like HashMap) can be used with iterators
+A complicated example:
+- Maps and sets (like HashMap) can be used with iterators
+- we can **collect()** an iterator of 2-element tuples into a **HashMap**
+- **filter_map** combines selection and processing:
+    - if the closure returns None, it skips the element
+    - it the closure returns Some(new_element), then it accepts new_element
+    - "?" error propagation works on **Option**, and inside closures
 
+```rust
+use std::collections::HashMap;
+
+let string_pairs = vec!["A=4", "B=X", "C=20", "QWE"];
+
+// filter_map combines filter and map in one step
+let actual_map: HashMap<String, u32> = string_pairs.iter()
+    .filter_map(|s| {
+        let mut it = s.split("=");
+        let key = it.next()?; // "?" also works on Option, and can return from closures
+        let val_str = it.next()?;
+        let val_int = val_str.parse().ok()?;
+
+        Some((String::from(key), val_int))
+    })
+    .collect();
+
+println!("{:?}", actual_map);
+```
+
+
+### External libraries
+
+- in rust, libraries and projects are called **crates**
+- we usually want to use available crates instead of reinventing wheels
+- **cargo** makes it all very simple:
+    - every package has a **Cargo.toml** file (the toml format is like a combination of ini and json)
+    - we can add **lib_name = "version_number"** keys to the **[dependencies]** section
+    - at build, cargo downloads and compiles the library
+- we can use thing
+- (advanced: also see **MODULES.md** for how **use** works)
+
+#### Where to find crates
+
+- [**crates.io**](https://crates.io/) : official package index
+- [**libs.rs**](https://libs.rs/) : alternative package search tool for information from crates.io
+
+Usually, every package published on crates.io will have automatically generated docs at **docs.rs/package_name**
+
+#### Example crate usage
+
+Task:
+- extract words from some text
+- capitalize all words shorter than 5 letters, and discard the rest
+- collect all words in a vector
+
+We can use **heck**:
+- crate page: <https://crates.io/crates/heck>
+- api documentation: <https://docs.rs/heck/0.3.1/heck/>
 
 Add in **Cargo.toml**:
 
