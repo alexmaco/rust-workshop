@@ -117,8 +117,8 @@ let mut x = Some(3);
 // Task: increment the value inside x, but mutating it, not moving as above
 
 // basic version
-match x {
-    Some(ref mut v) => *v += 1,
+match &mut x {
+    Some(v) => *v += 1,
     _ => {},
 }
 
