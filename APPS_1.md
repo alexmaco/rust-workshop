@@ -22,7 +22,7 @@ Note: the checks here don't have to be 100% mathematically correct. The goal is 
 1. Define an enum `Shape`, with a variant to contain each kind of shape
     - optionally also implement `Intersects` for `Shape` (hint: you can just match and call the previous impls)
 
-### 1. Reading from file
+### Reading from file
 
 1. Establish a simple text format for each shape. Example:
     - "rectangle 2 4 20 30" can mean a rectangle, with two following x & y pairs for 2 corners
@@ -30,6 +30,9 @@ Note: the checks here don't have to be 100% mathematically correct. The goal is 
 1. Write a file with some shapes in the format above, one per line
 1. Read the file, and parse into a `Vec<Shape>`
     - hint: use `split_whitespace` on each line
+
+### Compute and output
+
 1. Compute intersection sets:
     - divide the vector into a `Vec<HashSet<Shape>>`
     - all shapes in a set must intersect at least one shape in that set
