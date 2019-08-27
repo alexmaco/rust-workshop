@@ -44,7 +44,7 @@ fn main() {
 - there are many common and repetitive operations done with `Option`, `Result`, etc.
 - these types provide small functions, to turn several lines of repeated code into a single call
 
-[`Option::map`](https://doc.rust-lang.org/std/option/enum.Option.html#method.map) :
+[**Option::map**](https://doc.rust-lang.org/std/option/enum.Option.html#method.map) :
 
 ```rust
 let x: Option<u32> = Some(3);
@@ -60,7 +60,7 @@ let x2 = match x {
 let x3 = x.map(|val| val + 1);
 ```
 
-[`Option::and_then`](https://doc.rust-lang.org/std/option/enum.Option.html#method.and_then) :
+[**Option::and_then**](https://doc.rust-lang.org/std/option/enum.Option.html#method.and_then) :
 
 ```rust
 fn correct_half(n: u32) -> Option<u32> {
@@ -88,7 +88,7 @@ let combined = x.and_then(|val| correct_half(val));
 let combined2 = x.and_then(correct_half);
 ```
 
-[`Option::unwrap_or_else`](https://doc.rust-lang.org/std/option/enum.Option.html#method.unwrap_or_else) :
+[**Option::unwrap_or_else**](https://doc.rust-lang.org/std/option/enum.Option.html#method.unwrap_or_else) :
 
 ```rust
 fn get_answer_from_server() -> u32 {
@@ -108,7 +108,7 @@ let v = match x {
 let v2 = x.unwrap_or_else(|| get_answer_from_server());
 ```
 
-[`Option::as_ref`](https://doc.rust-lang.org/std/option/enum.Option.html#method.as_ref) :
+[**Option::as_ref**](https://doc.rust-lang.org/std/option/enum.Option.html#method.as_ref) :
 
 This example uses **as_mut**, which is the mutable counterpart of **as_ref**
 
@@ -129,7 +129,7 @@ println!("{:?}", x);
 ```
 
 Other useful combinators on **Option** and **Result**:
-- **Option::as_ref** and **as_ref_mut** : allows **map** to operate on a reference to the value inside if it exists
+
 - **Result::map**, and **and_then** : similar to the Option methods
 - **Result::ok** : transform a **Result<T, E>** into an **Option<T>** (keep the value, throw away the error)
 - **Option::ok_or**, and **ok_or_else** : transform an Option to Result, optionally setting an error
@@ -156,10 +156,10 @@ Basic idea:
 
 Frequently used methods:
 
-- [`map` : transforms using the given closure](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.map)
-- [`filter` : discard elements using closure](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.filter)
-- [`find` : get element if it exists](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.find)
-- [`collect`: gather elements into Vec/HashMap/String/etc](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.collect)
+- [**map` : transforms using the given closure](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.map)
+- [**filter` : discard elements using closure](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.filter)
+- [**find` : get element if it exists](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.find)
+- [**collect`: gather elements into Vec/HashMap/String/etc](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.collect)
 
 #### Iterator examples
 
@@ -220,7 +220,7 @@ fn main() {
 
 ### Serde
 
-- the [`serde_json`](https://crates.io/crates/serde_json) crate has support for (de)serialization to/from JSON
+- the [**serde_json**](https://crates.io/crates/serde_json) crate has support for (de)serialization to/from JSON
 - it can convert rust structs to JSON objects, rust `Vec`s to JSON arrays, etc.
 - it works by using `derive` annotations
 
