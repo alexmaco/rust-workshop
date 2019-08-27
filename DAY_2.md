@@ -143,7 +143,7 @@ let v: Vec<u32> = vec![1, 2, 3];
 // frequently, collect()'ing from iterators requires
 // annotating the type of the destination collection
 // the compiler often suggest the annotation
-let doubled: Vec<u32> = v.iter()
+let squared: Vec<u32> = v.iter()
     .map(|x| x * x)
     .collect();
 ```
@@ -198,8 +198,9 @@ fn main() {
 - it can convert rust structs to JSON objects, rust `Vec`s to JSON arrays, etc.
 - it works by using `derive` annotations
 
+Add in **Cargo.toml**:
+
 ```toml
-# in Cargo.toml
 [dependencies]
 serde_json = "1.0"
 ```
@@ -228,7 +229,3 @@ let recovered: TheData = match serde_json::from_str(&s) {
 };
 ```
 
-
-## Maybe
-
-### Using `io::Read` and `io::Write` on `slice`
