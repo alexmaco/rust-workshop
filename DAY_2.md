@@ -270,13 +270,13 @@ heck = "0.3.1"
 ```
 
 ```rust
-use heck::CamelCase;
+use heck::CamelCase; // this imports the CamelCase trait from the heck crate
 
 fn main() {
     let s = "abc def akjdgnakdjsg";
     let v: Vec<_> = s
         .split_whitespace()
-        .filter(|s| s.len() < 4)
+        .filter(|s| s.len() < 5)
         .map(|word| word.to_camel_case())
         .collect();
         
