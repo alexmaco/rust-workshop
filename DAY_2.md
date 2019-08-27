@@ -154,6 +154,18 @@ Basic idea:
 - when `next()` returns `None` iteration has finished
 - `Item` is an associated type: the implementation specifies the type of the element
 
+Basic manual usage:
+
+```rust
+let v = vec![1, 2, 3];
+let mut it = v.iter(); // it is mutable to advance, but v is not mutable
+
+println!("{:?}", it.next());
+println!("{:?}", it.next());
+println!("{:?}", it.next());
+println!("{:?}", it.next()); // this prints None
+```
+
 Frequently used methods:
 
 - [**map** : transforms using the given closure](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.map)
