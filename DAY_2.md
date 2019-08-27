@@ -1,20 +1,22 @@
 ## Day 2 - Usage patterns & Real life applications
 
-### Passing Functions and Closures
+### Passing functions and closures
 
-Functions and closures can be passed around as arguments:
+- Functions and closures can be passed around as arguments
+- A function can take an argument, that is another function
+- To name the type of the arguments, we usually use generics and trait bounds
+    - Common traits are **Fn**, **FnMut**, **FnOnce**
+- Closures (aka lambda functions) are defined with:
+    - list of arguments between `|` characters
+    - body is an expression, and can also be a block
 
 ```rust
-// a function can take an argument, that is another function !
-// (note: we cannot name the type of a function, so we use trait bounds)
-//
-// available traits are Fn, FnMut, and FnOnce
 fn convert_and_call<F>(n: u64, process: F)
 where
     F: Fn(&str) -> usize
 {
-    let s = n.to_string();
-    let res = process(&s);
+    let text = n.to_string();
+    let res = process(&text);
     println!("processing function returned {}", res);
 }
 
@@ -32,7 +34,7 @@ fn main() {
     let x = 5;
     convert_and_call(4444, |s| {
         println!("closures can capture their environment");
-        s.len() * x
+        s.len() * x // this is the returned value
     }); // ...or be a full block of code
 }
 ```
@@ -83,7 +85,7 @@ let x2 = match x {
 // equivalent, shorter
 let combined = x.and_then(|val| correct_half(val));
 // equivalent, shorter (2)
-let combined2 = x.and_then(triple_if_even);
+let combined2 = x.and_then(correct_half);
 ```
 
 [`Option::unwrap_or_else`](https://doc.rust-lang.org/std/option/enum.Option.html#method.unwrap_or_else) :
@@ -105,6 +107,32 @@ let v = match x {
 // equivalent, shorter
 let v2 = x.unwrap_or_else(|| get_answer_from_server());
 ```
+
+[`Option::as_ref`](https://doc.rust-lang.org/std/option/enum.Option.html#method.as_ref) :
+
+This example uses **as_mut**, which is the mutable counterpart of **as_ref**
+
+```rust
+let mut x = Some(3);
+// Task: increment the value inside x, but mutating it, not moving as above
+
+// basic version
+match x {
+    Some(ref mut v) => *v += 1,
+    _ => {},
+}
+
+// equivalent, shorter
+x.as_mut().map(|v| *v += 1);
+
+println!("{:?}", x);
+```
+
+Other useful combinators on **Option** and **Result**:
+- **Option::as_ref** and **as_ref_mut** : allows **map** to operate on a reference to the value inside if it exists
+- **Result::map**, and **and_then** : similar to the Option methods
+- **Result::ok** : transform a **Result<T, E>** into an **Option<T>** (keep the value, throw away the error)
+- **Option::ok_or**, and **ok_or_else** : transform an Option to Result, optionally setting an error
 
 
 ### Iterators
@@ -132,8 +160,6 @@ Frequently used methods:
 - [`filter` : discard elements using closure](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.filter)
 - [`find` : get element if it exists](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.find)
 - [`collect`: gather elements into Vec/HashMap/String/etc](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.collect)
-
-**References**
 
 #### Iterator examples
 
