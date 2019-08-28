@@ -1,20 +1,22 @@
 ## Day 2 - Usage patterns & Real life applications
 
-### Passing Functions and Closures
+### Passing functions and closures
 
-Functions and closures can be passed around as arguments:
+- Functions and closures can be passed around as arguments
+- A function can take an argument, that is another function
+- To name the type of the arguments, we usually use generics and trait bounds
+    - Common traits are **Fn**, **FnMut**, **FnOnce**
+- Closures (aka lambda functions) are defined with:
+    - list of arguments between `|` characters
+    - body is an expression, and can also be a block
 
 ```rust
-// a function can take an argument, that is another function !
-// (note: we cannot name the type of a function, so we use trait bounds)
-//
-// available traits are Fn, FnMut, and FnOnce
 fn convert_and_call<F>(n: u64, process: F)
 where
     F: Fn(&str) -> usize
 {
-    let s = n.to_string();
-    let res = process(&s);
+    let text = n.to_string();
+    let res = process(&text);
     println!("processing function returned {}", res);
 }
 
@@ -32,7 +34,7 @@ fn main() {
     let x = 5;
     convert_and_call(4444, |s| {
         println!("closures can capture their environment");
-        s.len() * x
+        s.len() * x // this is the returned value
     }); // ...or be a full block of code
 }
 ```
@@ -42,7 +44,7 @@ fn main() {
 - there are many common and repetitive operations done with `Option`, `Result`, etc.
 - these types provide small functions, to turn several lines of repeated code into a single call
 
-[`Option::map`](https://doc.rust-lang.org/std/option/enum.Option.html#method.map) :
+[**Option::map**](https://doc.rust-lang.org/std/option/enum.Option.html#method.map) :
 
 ```rust
 let x: Option<u32> = Some(3);
@@ -58,7 +60,7 @@ let x2 = match x {
 let x3 = x.map(|val| val + 1);
 ```
 
-[`Option::and_then`](https://doc.rust-lang.org/std/option/enum.Option.html#method.and_then) :
+[**Option::and_then**](https://doc.rust-lang.org/std/option/enum.Option.html#method.and_then) :
 
 ```rust
 fn correct_half(n: u32) -> Option<u32> {
@@ -83,10 +85,10 @@ let x2 = match x {
 // equivalent, shorter
 let combined = x.and_then(|val| correct_half(val));
 // equivalent, shorter (2)
-let combined2 = x.and_then(triple_if_even);
+let combined2 = x.and_then(correct_half);
 ```
 
-[`Option::unwrap_or_else`](https://doc.rust-lang.org/std/option/enum.Option.html#method.unwrap_or_else) :
+[**Option::unwrap_or_else**](https://doc.rust-lang.org/std/option/enum.Option.html#method.unwrap_or_else) :
 
 ```rust
 fn get_answer_from_server() -> u32 {
@@ -105,6 +107,32 @@ let v = match x {
 // equivalent, shorter
 let v2 = x.unwrap_or_else(|| get_answer_from_server());
 ```
+
+[**Option::as_ref**](https://doc.rust-lang.org/std/option/enum.Option.html#method.as_ref) :
+
+This example uses **as_mut**, which is the mutable counterpart of **as_ref**
+
+```rust
+let mut x = Some(3);
+// Task: increment the value inside x, but mutating it, not moving as above
+
+// basic version
+match &mut x {
+    Some(v) => *v += 1,
+    _ => {},
+}
+
+// equivalent, shorter
+x.as_mut().map(|v| *v += 1);
+
+println!("{:?}", x);
+```
+
+Other useful combinators on **Option** and **Result**:
+
+- **Result::map**, and **and_then** : similar to the Option methods
+- **Result::ok** : transform a **Result<T, E>** into an **Option\<T>** (keep the value, throw away the error)
+- **Option::ok_or**, and **ok_or_else** : transform an Option to Result, optionally setting an error
 
 
 ### Iterators
@@ -126,220 +154,188 @@ Basic idea:
 - when `next()` returns `None` iteration has finished
 - `Item` is an associated type: the implementation specifies the type of the element
 
+Basic manual usage:
+
+```rust
+let v = vec![1, 2, 3];
+let mut it = v.iter(); // it is mutable to advance, but v is not mutable
+
+println!("{:?}", it.next());
+println!("{:?}", it.next());
+println!("{:?}", it.next());
+println!("{:?}", it.next()); // this prints None
+```
+
 Frequently used methods:
 
-- [`map` : transforms using the given closure](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.map)
-- [`filter` : discard elements using closure](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.filter)
-- [`find` : get element if it exists](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.find)
-- [`collect`: gather elements into Vec/HashMap/String/etc](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.collect)
+- [**map** : transforms using the given closure](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.map)
+- [**filter** : discard elements using closure](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.filter)
+- [**find** : get element if it exists](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.find)
+- [**collect**: gather elements into Vec/HashMap/String/etc](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.collect)
 
-### Threads and Thread Safety
-
-#### Creating a new thread with spawn
+#### Iterator examples
 
 ```rust
-use std::thread;
-use std::time::Duration;
+let v: Vec<u32> = vec![1, 2, 3];
 
-let join_handle = thread::spawn(|| {
-    for i in 1..10 {
-        println!("hi number {} from the spawned thread!", i);
-        thread::sleep(Duration::from_millis(1));
-    }
-    123
-});
+// frequently, collect()'ing from iterators requires
+// annotating the type of the destination collection
+// the compiler often suggest the annotation
+let squared: Vec<u32> = v.iter()
+    .map(|x| x * x)
+    .collect();
+```
 
-// optional, block waiting for thread to finish
-match join_handle.join() {
-    Ok(ret) => println!("thread returned {}", ret),
-    Err(e) => println!("thread panicked: {:?}", e),
+Usual methods to start iteration:
+
+- `iter()` will iterate with references to the original elements
+- `into_iter()` will consume the Vec, and iterate the actual elements
+
+```rust
+// this leaves v still alive, and iterates with references
+let even: Vec<u32> = v.iter()
+    .filter(|x| *x % 2 == 0) // dereference x, because x is a reference
+    .map(|x| *x) // make a copy of x, to create a vector of value
+    .collect();
+
+// this consumes v, and iterates with values
+let halves: Vec<u32> = v.into_iter()
+    .map(|x| x / 2)
+    .collect();
+```
+
+#### A complicated example
+
+- Maps and sets (like HashMap) can be used with iterators
+- we can **collect()** an iterator of 2-element tuples into a **HashMap**
+- **filter_map** combines selection and processing:
+    - if the closure returns None, it skips the element
+    - it the closure returns Some(new_element), then it accepts new_element
+    - "?" error propagation works on **Option**, and inside closures
+
+Example task:
+- we have some strings in the "key_name=integer_value" format
+- we want to parse them in a HashMap<String, u32>
+- we want to skip strings not in the correct format, but not crash
+
+First version:
+
+```rust
+use std::collections::HashMap;
+
+let string_pairs = vec!["A=4", "B=X", "C=20", "QWE"];
+
+let mut actual_map: HashMap<String, u32> = HashMap::new();
+
+for pair in string_pairs {
+    
 }
+
+println!("{:?}", actual_map);
 ```
 
-#### Sending data between threads
+Most compact version:
 
 ```rust
-// the closure for a thread can also capture values
-let exclusive = 4;
+use std::collections::HashMap;
 
-let handle_a = thread::spawn(move || {
-    println!("took ownership of {}", exclusive);
-});
+let string_pairs = vec!["A=4", "B=X", "C=20", "QWE"];
 
-//println!("{}", exclusive); // errors, since `exclusive` was moved
+// filter_map combines filter and map in one step
+let actual_map: HashMap<String, u32> = string_pairs.iter()
+    .filter_map(|s| {
+        let mut it = s.split("=");
+        let key = it.next()?; // "?" also works on Option, and can return from closures
+        let val_str = it.next()?;
+        let val_int = val_str.parse().ok()?;
+
+        Some((String::from(key), val_int))
+    })
+    .collect();
+
+println!("{:?}", actual_map);
 ```
 
-Threads can pass messages using channels:
 
-```rust
-use std::sync::mpsc;
+### External libraries
 
-let (tx, rx) = mpsc::channel();
+- in rust, libraries and projects are called **crates**
+- we usually want to use available crates instead of reinventing wheels
+- **cargo** makes it all very simple:
+    - every package has a **Cargo.toml** file (the toml format is like a combination of ini and json)
+    - we can add **lib_name = "version_number"** keys to the **[dependencies]** section
+    - at build, cargo downloads and compiles the library
+- we can use thing
+- (advanced: also see **MODULES.md** for how **use** works)
 
-let handle_a = thread::spawn(move || { // this captures the tx end
-    for i in 1..10 {
-        println!("sending {}", i);
-        tx.send(i).unwrap();
-    }
-}
-let handle_b = thread::spawn(move || { // this captures the rx end
-    for val in rx {
-        println!("received {}", val);
-    }
-}
+#### Where to find crates
 
-handle_a.join().unwrap();
-handle_b.join().unwrap();
+- [**crates.io**](https://crates.io/) : official package index
+- [**libs.rs**](https://libs.rs/) : alternative package search tool for information from crates.io
+
+Usually, every package published on crates.io will have automatically generated docs at **docs.rs/package_name**
+
+#### Example crate usage
+
+Task:
+- extract words from some text
+- capitalize all words shorter than 5 letters, and discard the rest
+- collect all words in a vector
+
+We can use **heck**:
+- crate page: <https://crates.io/crates/heck>
+- api documentation: <https://docs.rs/heck/0.3.1/heck/>
+
+Add in **Cargo.toml**:
+
+```toml
+[dependencies]
+heck = "0.3.1"
 ```
 
-#### Sharing data between threads
-
-We cannot share unsyncronized data (see `Sync` explanation below)
-
 ```rust
-use std::thread;
-
-let mut v = vec![1, 2, 3];
-
-// THIS WILL NOT COMPILE
-let handle_a = thread::spawn(|| {
-    v.push(4);
-});
-let handle_b = thread::spawn(|| {
-    v.push(4);
-});
-```
-
-But if we create a thread-safe object (like a mutex), we can share it:
-
-```rust
-use std::sync::{Mutex, Arc};
-use std::thread;
+use heck::CamelCase; // this imports the CamelCase trait from the heck crate
 
 fn main() {
-    let counter = Arc::new(Mutex::new(0)); // creates an integer, wrapped in a mutex, wrapped in a shareable Arc
-    let mut handles = vec![];
-
-    for _ in 0..10 {
-        let counter = Arc::clone(&counter); // gets a new handle to the shared mutex
-        let handle = thread::spawn(move || {
-            let mut num = counter.lock().unwrap(); // locks the mutex
-
-            // update data inside the mutex
-            // this can only be done after lock, so it is always safe
-            *num += 1;
-
-            // mutex guard goes out of scope, and the mutex is closed
-        });
-        handles.push(handle);
-    }
-
-    for handle in handles {
-        handle.join().unwrap();
-    }
-
-    println!("Result: {}", *counter.lock().unwrap());
+    let s = "abc def akjdgnakdjsg";
+    let v: Vec<_> = s
+        .split_whitespace()
+        .filter(|s| s.len() < 5)
+        .map(|word| word.to_camel_case())
+        .collect();
+        
+    println!("{:?}", v);
 }
 ```
-
-```rust
-thread::spawn(move || {
-    let listener = TcpListener::bind("127.0.0.1:1234").unwrap();
-
-    loop {
-        let conn = listener.accept();
-
-        thread::spawn(move || {
-            let (mut stream, remote) = match conn {
-                Ok(x) => x,
-                _ => return,
-            };
-            println!("new client connected from {}", remote);
-
-            let mut buf = vec![];
-
-            loop {
-                buf.clear();
-                let len = std::io::BufReader::new(&mut stream).read_until(b'\n', &mut buf);
-                if let Ok(0) = len {
-                    // connection closed. goodnight.
-                    return;
-                }
-                if let Err(e) = len {
-                    eprintln!("error receiving from client {}: {:?}", remote, e);
-                    return;
-                }
-
-                let num: i64 = buf
-                    .as_slice()
-                    .map(|bytes| str::from_utf8(bytes))
-                    .and_then(|s| s.parse().ok());
-
-                let reply = num.map(|x| x + 1);
-
-                match reply {
-                    Some(num) => stream.write_all(result.as_bytes()).unwrap(),
-                    None => stream.write_all("request not understood".as_bytes()),
-                }
-                stream.write_all(b"\n").unwrap();
-            }
-        });
-    }
-});
-
-```
-
-#### The `Send` and `Sync` marker traits
-
-`Send` basic idea:
-
-- when an object is created in a function, it only exists on one thread
-  - we can say that thread "owns" the object
-- if the type is safe to move to another thread, the compiler marks it with `Send`
-  - e.g. `let x = 5;` or `let stuff = vec![1, 2, 3];` are both safe to `Send`
-- what is not `Send`:
-  - objects with a reference inside
-  - e.g. `&mut Vec<T>`, a mutable ref to Vec cannot be `Send`, because 2 threads would be able to mutate it at the same time
-
-`Sync` basic idea:
-
-- a `Vec` is not threadsafe:
-  - i.e. it is _not_ safe to mutate it from 2 threads
-  - so it is not safe to have 2 `&mut` references to it
-  - (but it is ok to have many shared references, readonly access is safe)
-- the compiler infers that `Vec` is not `Sync` (i.e. `Vec<T>: !Sync`)
-  - the compiler does not allow mutable access from more than one thread
-- Some basic types are `Sync` and therefore safe
-  - a `std::sync::Mutex<T>` is `Sync`
-  - a `std::sync::Arc<T>` is `Sync`
-  - a `std::sync::atomic::AtomicBool` is `Sync`
-    - but plain `bool` is not
 
 ### Serde
 
-- the [`serde_json`](https://crates.io/crates/serde_json) crate has support for (de)serialization to/from JSON
+- the [**serde_json**](https://crates.io/crates/serde_json) crate has support for (de)serialization to/from JSON
 - it can convert rust structs to JSON objects, rust `Vec`s to JSON arrays, etc.
 - it works by using `derive` annotations
 
+Add in **Cargo.toml**:
+
 ```toml
-# in Cargo.toml
 [dependencies]
+serde_derive = "1.0"
 serde_json = "1.0"
 ```
 
 ```rust
-use serde_json::{Serialize, Deserialize};
+use serde_derive::{Serialize, Deserialize};
+use serde_json;
 
 #[derive(Serialize, Deserialize)] // this is where the magic happens
 struct TheData {
     x: u32,
     s: String,
-    v: Vec<f32>,
+    v: Vec<i32>,
 }
 
 let d = TheData { x: 5, s: "abcd".into(), v: vec![1,2,3] };
 
-let s = serde_json::to_string_pretty(&d).expect("serialization failed")
+let s = serde_json::to_string_pretty(&d).expect("serialization failed");
 println!("{}", s);
 
 let recovered: TheData = match serde_json::from_str(&s) {
@@ -351,7 +347,3 @@ let recovered: TheData = match serde_json::from_str(&s) {
 };
 ```
 
-
-## Maybe
-
-### Using `io::Read` and `io::Write` on `slice`
