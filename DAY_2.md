@@ -221,6 +221,7 @@ Example task:
 First version:
 
 ```rust
+// Version 1
 use std::collections::HashMap;
 
 let string_pairs = vec!["A=4", "B=X", "C=20", "QWE"];
@@ -228,8 +229,90 @@ let string_pairs = vec!["A=4", "B=X", "C=20", "QWE"];
 let mut actual_map: HashMap<String, u32> = HashMap::new();
 
 for pair in string_pairs {
-    
+    let mut pieces = pair.split('=');
+    let maybe_key = pieces.next();
+
+    let key = match maybe_key {
+        Some(k) => k,
+        _ => continue, // this branch doe not return, instead continues the loop
+    };
+
+    let maybe_val = pieces.next();
+
+    let val = match maybe_val {
+        Some(v) => v,
+        _ => continue,
+    };
+
+    let val_num: u32 = match val.parse() {
+        Ok(x) => x,
+        Err(_) => continue, // we ignore parsing errors
+    };
+
+    actual_map.insert(key.into(), val_num);
 }
+
+println!("{:?}", actual_map);
+```
+
+We can simplify: we can separate a parse function, so we can use the "?" error propagation operator on Options
+
+```rust
+// Version 2
+use std::collections::HashMap;
+
+fn parse_pair(pair: &str) -> Option<(String, u32)> {
+    let mut pieces = pair.split('=');
+
+    let key = pieces.next()?;
+    let val = pieces.next()?;
+
+    let val_num: u32 = val.parse().ok()?;
+
+    Some((String::from(key), val_num))
+}
+
+let string_pairs = vec!["A=4", "B=X", "C=20", "QWE"];
+
+let mut actual_map: HashMap<String, u32> = HashMap::new();
+
+for pair in string_pairs {
+    let maybe_pair = parse_pair(pair);
+
+    let (k, v) = match maybe_pair {
+        Some(tup) => tup,
+        _ => continue,
+    };
+
+    actual_map.insert(k, v);
+}
+
+println!("{:?}", actual_map);
+```
+
+One more simplification: we can iterate over the vector, generate pairs, and collect into a HashMap
+
+```rust
+// Version 2
+use std::collections::HashMap;
+
+fn parse_pair(pair: &str) -> Option<(String, u32)> {
+    let mut pieces = pair.split('=');
+
+    let key = pieces.next()?;
+    let val = pieces.next()?;
+
+    let val_num: u32 = val.parse().ok()?;
+
+    Some((String::from(key), val_num))
+}
+
+let string_pairs = vec!["A=4", "B=X", "C=20", "QWE"];
+
+let actual_map: HashMap<String, u32> = string_pairs.iter()
+    .map(|pair| parse_pair) // now the iterator's elements are Option<(String, u32)>
+    .filter_map(|maybe_pair| maybe_pair) // now the element is (String, u32), all None are discarded by filter_map
+    .collect(); // we can collect an iterator with elements (K, V) into a HashMap
 
 println!("{:?}", actual_map);
 ```
