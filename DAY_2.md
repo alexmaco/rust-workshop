@@ -228,7 +228,27 @@ let string_pairs = vec!["A=4", "B=X", "C=20", "QWE"];
 let mut actual_map: HashMap<String, u32> = HashMap::new();
 
 for pair in string_pairs {
-    
+    let mut pieces = pair.split('=');
+    let maybe_key = pieces.next();
+
+    let key = match maybe_key {
+        Some(k) => k,
+        _ => continue, // this branch doe not return, instead continues the loop
+    };
+
+    let maybe_val = pieces.next();
+
+    let val = match maybe_val {
+        Some(v) => v,
+        _ => continue,
+    };
+
+    let val_num: u32 = match val.parse() {
+        Ok(x) => x,
+        Err(_) => continue, // we ignore parsing errors
+    };
+
+    actual_map.insert(key.into(), val_num);
 }
 
 println!("{:?}", actual_map);
