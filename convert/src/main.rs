@@ -9,9 +9,8 @@ fn build_table_header(reader: &mut Reader<&[u8]>) -> Result<Node, csv::Error> {
     //      - create cells for the html table header with <td>
     //      - set the csv header as text for the cell
     //      - add the new cell to title_row
-    for head in reader.headers()? {
-        title_row.add_child(Node::from("td").with_text(head));
-    }
+
+    // TODO: solve
 
     thead.add_child(title_row); // now thead contains the <tr> that is title_row
 
@@ -29,15 +28,7 @@ fn build_table_body(reader: &mut Reader<&[u8]>) -> Result<Node, csv::Error> {
     //      - **NEW** add the new <td> cell as a child for the <tr> row
     //      - add the new <tr> row as a child of the <tbody> node
 
-    for record in reader.records() {
-        let mut data_row = Node::from("tr");
-
-        for cell in record?.iter() {
-            data_row.add_child(Node::from("td").with_text(cell));
-        }
-
-        tbody.add_child(data_row);
-    }
+    // TODO: solve
 
     Ok(tbody)
 }
@@ -58,16 +49,15 @@ year,make,model,description
     //      - obtain the table body node
     //      - add both nodes as children to the "table" node
 
-    let thead = build_table_header(&mut reader).unwrap();
-    let tbody = build_table_body(&mut reader).unwrap();
-    table.add_child(thead);
-    table.add_child(tbody);
+    // TODO: solve
+
 
     let html_doc = create_html_only_with_table(table);
 
     // Task 4:
     //      - read the api docs (or source) and find how to print html_doc as a string
-    println!("{}", html_doc.to_string_pretty());
+
+    // TODO: solve
 }
 
 fn create_html_only_with_table(table: Node) -> Node {
@@ -100,7 +90,6 @@ pub mod html_build {
     pub struct Node {
         name: String,
         content: Option<Content>,
-        // TODO
         //attr: HashMap<String, String>,
     }
 
@@ -109,7 +98,6 @@ pub mod html_build {
             Self {
                 name: s.into(),
                 content: None,
-                // TODO
                 //attr: HashMap::new(),
             }
         }
