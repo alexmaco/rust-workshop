@@ -204,13 +204,37 @@ let halves: Vec<u32> = v.into_iter()
     .collect();
 ```
 
-A complicated example:
+#### A complicated example
+
 - Maps and sets (like HashMap) can be used with iterators
 - we can **collect()** an iterator of 2-element tuples into a **HashMap**
 - **filter_map** combines selection and processing:
     - if the closure returns None, it skips the element
     - it the closure returns Some(new_element), then it accepts new_element
     - "?" error propagation works on **Option**, and inside closures
+
+Example task:
+- we have some strings in the "key_name=integer_value" format
+- we want to parse them in a HashMap<String, u32>
+- we want to skip strings not in the correct format, but not crash
+
+First version:
+
+```rust
+use std::collections::HashMap;
+
+let string_pairs = vec!["A=4", "B=X", "C=20", "QWE"];
+
+let mut actual_map: HashMap<String, u32> = HashMap::new();
+
+for pair in string_pairs {
+    
+}
+
+println!("{:?}", actual_map);
+```
+
+Most compact version:
 
 ```rust
 use std::collections::HashMap;
