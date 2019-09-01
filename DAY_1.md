@@ -179,6 +179,7 @@ fn main() {
 fn main() {
     let x = 2.0;        // f64
     let y: f32 = 3.0;   // f32
+    let z: f32 = 5;     // error; conversion must be made explicitly
 }
 ```
 
@@ -216,6 +217,9 @@ fn main() {
     let five_hundred = tup.0;
     let six_point_four = tup.1;
     let one = tup.2;
+
+    // invalid access
+    let error = tup.3;      // does not compile
 }
 ```
 
@@ -225,7 +229,8 @@ fn main() {
 
 ```rust
 fn main() {
-    let a: [i32; 5] = [1, 2, 3, 4, 5];  // element type and number defined explicitly
+    let a: [i32; 5] = [1, 2, 3, 4/*, 5*/];  // element type and number defined explicitly
+                                            // error: the number of elements declared must match the number of elements intialized
     let b = [1, 2, 3, 4, 5];            // element type and number inferred
     let c = [3; 5];                     // 3 repeated 5 times: [3, 3, 3, 3, 3]
 
@@ -302,9 +307,11 @@ fn my_func2(x: i32, y: u8) {
     println!("my_func2, x: {}, y: {}", x, y);
 }
 
-// call
-my_func1(42);
-my_func2(1, 2);
+fn main() {
+    // call
+    my_func1(/*42*/);       // error: all the expected arguments must be passed at call time
+    my_func2(1/*, 2*/);     // error: all the expected arguments must be passed at call time
+}
 ```
 
 #### Function with parameters, with return value
@@ -485,7 +492,8 @@ fn iterate_x_times_for(x: u32) {
 ```rust
 fn main() {
     let literal = "hello";              // literal string
-    let mut s = String::from(literal);  // string object
+    let s = String::from(literal);      // string object
+    let mut s: String = "hello";        // error: String must be constructed explicitly from a literal
 
     s.push_str(" world!");              // append string
 
@@ -614,7 +622,7 @@ fn calculate_length(s: &String) -> usize { // s is a reference to a String
 fn main() {
     let mut s = String::from("hello");
 
-    change(&mut s);
+    change(&/*mut*/ s);     // error: mut must be specified at call time
 }
 
 fn change(some_string: &mut String) {
@@ -887,7 +895,7 @@ fn main() {
         address: String::from("127.0.0.1"),
     };
 
-    let home2 = IpAddrEnum::V4(String::from("127.0.0.1"));
+    let home2 = IpAddrEnum::V4(/*String::from("127.0.0.1")*/);
 }
 ```
 
@@ -954,7 +962,7 @@ fn value_in_cents(coin: Coin) -> u8 {
         Coin::Penny => 1,
         Coin::Nickel => 5,
         Coin::Dime => 10,
-        Coin::Quarter => 25,
+        /*Coin::Quarter => 25,*/    // error: must handle all the possible enum values
     }
 }
 ```
