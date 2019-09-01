@@ -221,6 +221,8 @@ fn main() {
 
 #### Array [..., ...]
 
+- has fixed size
+
 ```rust
 fn main() {
     let a: [i32; 5] = [1, 2, 3, 4, 5];  // element type and number defined explicitly
@@ -280,8 +282,10 @@ fn my_func() {
     println!("my_func");
 }
 
-// call
-my_func();
+fn main() {
+    // call
+    my_func();
+}
 ```
 
 #### Function with parameters, no return value
@@ -305,24 +309,28 @@ my_func2(1, 2);
 
 #### Function with parameters, with return value
 
+If a function returns a value, the type of the return value must always be declared in the function's signature.
+
 ```rust
 // definition
 fn my_func(x: i32) -> bool {
     println!("my_func, x: {}", x);
 
     // explicit return (statement, must end with semicolon)
-    return x == 1;
+    /* return x == 1; */    // error: must return a bool value
 }
 
-fn my_func2(x: i32) -> bool {
+fn my_func2(x: i32) /*-> bool*/ {   // error: the function must declare the return type if the body returns a value
     println!("my_func, x: {}", x);
 
     // implicit return (expression, no ending semicolon)
     x < 5
 }
 
-// call
-let result = my_func(0);
+fn main() {
+    // call
+    let result = my_func(0);
+}
 ```
 
 #### Exercise 2 (average with functions)
@@ -338,6 +346,7 @@ let result = my_func(0);
   - both branches must return values of the same type
   - if the branches don't return a value, the return is **()** called **unit type**
 - the condition **must** be a **bool**
+- it is not necessary to surround the condition with `()`
 
 ```rust
 fn main() {
@@ -455,7 +464,7 @@ fn main() {
 }
 
 fn iterate_x_times_for(x: u32) {
-    for i in (0..x) {
+    for i in 0..x {     // does not include x: 0, 1, ..., x-1
         println!("Iteration {}", i);
     }
 }
@@ -650,6 +659,8 @@ fn dangle() -> &String {
     let s = String::from("hello");
 
     &s          // error: this reference would be dangling when s goes out of scope
+
+    // s goes out of scope and its value is dropped
 }
 ```
 
@@ -685,8 +696,8 @@ let slice = &s[..];
 fn first_word(s: &String) -> &str {
     let bytes = s.as_bytes();
 
-    for (i, &item) in bytes.iter().enumerate() {
-        if item == b' ' {
+    for (i, &item) in bytes.iter().enumerate() {    // enumerate returns a tuple (index, element)
+        if item == b' ' {   // ascii byte literal for space
             return &s[0..i];
         }
     }
@@ -734,6 +745,7 @@ let slice = &a[1..3];   // slice has type &[i32]
 
 - similar with tuples, but have names for the fields
 - the whole structure must be declared **mutable** or not; there is no control per field
+- similar to **struct** and **class** in other languages
 
 ```rust
 // definition
@@ -744,41 +756,43 @@ struct User {
     active: bool,
 }
 
-// instantiation
-let mut user = User {
-    email: String::from("someone@example.com"),
-    username: String::from("someusername123"),
-    active: true,
-    sign_in_count: 1,
-};
+fn main() {
+    // instantiation
+    let mut user = User {
+        email: String::from("someone@example.com"),
+        username: String::from("someusername123"),
+        active: true,
+        /*sign_in_count: 1,*/   // error: all the fields must be initialized
+    };
 
-// member access
-let active = user.active;
-user.email = String::from("other@example.com");
+    // member access
+    let active = user.active;
+    user.email = String::from("other@example.com");
 
-// instantiate using variables with the same name as the fields
-let username = String::from("user");
-let email = String::from("email");
+    // instantiate using variables with the same name as the fields
+    let username = String::from("user");
+    let email = String::from("email");
 
-let user1 = User {
-    username,           // equivalent to username: username
-    email,              // email: email
-    active: true,
-    sign_in_count: 1,
-};
+    let user1 = User {
+        username,           // equivalent to username: username
+        email,              // email: email
+        active: true,
+        sign_in_count: 1,
+    };
 
-// instantiate with some values from other instance
-let user2 = User {
-    username: String::from("foo"),
-    email::String::from("bar"),
-    ..user1                     // take the remaining values from user1
+    // instantiate with some values from other instance
+    let user2 = User {
+        username: String::from("foo"),
+        email::String::from("bar"),
+        ..user1                     // take the remaining values from user1
+    };
+
+    // try to display the struct
+    println!("user1: {}", user1);   // error
+
+    // display using debug; must also add #[derive(Debug)] before struct User
+    println!("user1: {:?}", user1);
 }
-
-// try to display the struct
-println!("user1: {}", user1);   // error
-
-// display using debug; must also add #[derive(Debug)] before struct User
-println!("user1: {:?}", user1);
 ```
 
 #### Exercise 4 (rectangle area)
@@ -794,7 +808,8 @@ println!("user1: {:?}", user1);
 #### Methods
 
 - functions defined within the context of a structure
-- the first parameter can be the structure instance, **self**
+- the structure instance, **self**, can be passed as the first parameter
+- similar to normal functions, except for **self**
 - called using dot, like in other programming languages
 
 ```rust
@@ -879,6 +894,14 @@ enum Option<T> {
     None,
 }
 
+fn positive(n: i32) -> Option<i32> {
+    if n > 0 {
+        Some(n)
+    } else {
+        None
+    }
+}
+
 fn main() {
     let some_number = Some(5);
     let some_string = Some("a string");
@@ -888,6 +911,13 @@ fn main() {
     // Option<T> cannot be used directly as T
     // the None case must be explicitly handled when the value is actually used
     let sum = 42 + some_number;         // error
+
+    // returned values
+    let r1 = positive(-1);
+    let r2 = positive(2);
+
+    println!("result1: {:?}", r1);
+    println!("result2: {:?}", r2);
 }
 ```
 
@@ -945,9 +975,11 @@ fn plus_one(x: Option<i32>) -> Option<i32> {
     }
 }
 
-let five = Some(5);
-let six = plus_one(five);
-let none = plus_one(None);
+fn main() {
+    let five = Some(5);
+    let six = plus_one(five);
+    let none = plus_one(None);
+}
 ```
 
 #### if let
@@ -958,17 +990,18 @@ let none = plus_one(None);
 - can optionally have an **else**
 
 ```rust
+fn main() {
+    // match
+    let some_u8_value = Some(0u8);
+    match some_u8_value {
+        Some(3) => println!("three"),
+        _ => (),
+    }
 
-// match
-let some_u8_value = Some(0u8);
-match some_u8_value {
-    Some(3) => println!("three"),
-    _ => (),
-}
-
-// equivalent if let
-if let Some(3) = some_u8_value {
-    println!("three");
+    // equivalent if let
+    if let Some(3) = some_u8_value {
+        println!("three");
+    }
 }
 ```
 
@@ -1038,6 +1071,7 @@ for i in v4.iter_mut() {
 - uses a hashing function to determine the place for a specific element
   - the order of the elements may appear random
 - custom types can be used as keys; the **Hash** trait must be implemented (usually via #[derive(Hash)])
+- similar to **map**, **dict** in other languages
 
 ```rust
 use std::collections::HashMap;
@@ -1090,6 +1124,7 @@ for (key, value) in &scores {
 - panic can be called directly by our code or indirectly by other code that we call
 - by default the stacktrace of the program is not displayed at panic; it can be enabled with:
   - `RUST_BACKTRACE=1 cargo run`
+- similar to **assert** in other languages
 
 ```rust
 fn main() {
@@ -1110,7 +1145,7 @@ fn main() {
   - unwrap
   - expect (similar to unwrap, allows specifying an error message in case of failure)
 - **unwrap** and **expect** should be used when prototyping or in test code
-- errors can be propagated using **?**
+- errors can be propagated using `?`
   - if the result is **Ok**, the execution continues with the value contained inside
   - if the result is **Error**, the result is returned from the current function, for the calling code to process it
   - it must be called inside a function that returns **Result**
@@ -1225,7 +1260,7 @@ fn read_username_from_file() -> Result<String, io::Error> {
   - Result\<T, E>
   - Vec\<T>
   - HashMap\<K, V>
-- the compiler generates code for each instantiated type
+- the compiler generates code for each instantiated type (similar to templates in C++)
 
 ```rust
 struct Point<T> {
@@ -1301,7 +1336,7 @@ fn main() {
 
 - describe the shared behavior of types
 - the behavior of a type is the collection of methods that we can call on that type
-- group method signatures together (similar to an interface in other languages)
+- group method signatures together (similar to an **interface** in other languages)
 - when implementing the trait on a type all the methods of the trait must be defined
 - supported cases:
   - local trait definition, local type definition
