@@ -736,10 +736,20 @@ fn main() {
 - similar to the String slices
 
 ```rust
-let a = [1, 2, 3, 4, 5];
+fn main() {
+    let a = [1, 2, 3, 4, 5];
 
-let slice = &a[1..3];   // slice has type &[i32]
+    let slice = &a[1..3];   // slice has type &[i32]
+}
 ```
+
+#### Exercise 4 (string manipulation)
+
+- declare an array of **String** objects, each element representing a word, surrounded by an arbitrary number of spaces before and after
+- find a function to trim the surrounding spaces from each word (search the [Documentation for String](https://doc.rust-lang.org/std/string/struct.String.html))
+- obtain a new **String** by concatenating all the trimmed words, inserting a single space between them
+- example:
+    - [" hello  ", "    world    "] => "hello world "
 
 ### Structs
 
@@ -795,7 +805,7 @@ fn main() {
 }
 ```
 
-#### Exercise 4 (rectangle area)
+#### Exercise 5 (rectangle area)
 
 - define a structure to hold a **Rectangle**, with the following fields
     - width
@@ -834,7 +844,7 @@ fn main() {
 }
 ```
 
-#### Exercise 5 (rectangle area with method)
+#### Exercise 6 (rectangle area with method)
 
 - change the **area** function from **Exercise 4** to be a method on the struct **Rectangle**
 
@@ -1007,7 +1017,7 @@ fn main() {
 }
 ```
 
-#### Exercise 6 (time)
+#### Exercise 7 (time)
 
 - define an enum **Time** for various time units, each containing an integer value:
     - seconds
@@ -1110,7 +1120,7 @@ fn main() {
 }
 ```
 
-#### Exercise 7 (number of occurrences)
+#### Exercise 8 (number of occurrences)
 
 - declare some **Vec** instances containing some integers
 - obtain a larger **Vec** that contains the elements in all the smaller **Vec** instances (see [Documentation for Vec](https://doc.rust-lang.org/std/vec/struct.Vec.html))
@@ -1502,6 +1512,10 @@ impl<T: Display + PartialOrd> Pair<T> {
 }
 ```
 
+#### Exercise 9 (generics + traits)
+
+< TBD >
+
 ### Tests
 
 - built-in support for unit tests, no need to include a 3rd party framework
@@ -1558,7 +1572,7 @@ mod tests_1 {
 }
 ```
 
-#### Exercise 8 (factorial)
+#### Exercise 10 (factorial)
 
 - define a function to compute the factorial of n, with argument n received as a signed value
     - if n < 0, return None
