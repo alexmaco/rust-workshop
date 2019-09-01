@@ -166,8 +166,10 @@ fn main() {
     let number: u32 = 42;   // type specified explicitly
     let number_auto = 42;   // type inferred (integer)
 
-    let number_convert = "42".parse().expect("Not a number!"); // incorrect: type must be specified
-    let number_convert_type: u32 = "42".parse().expect("Not a number!"); // type specified explicitly
+    let number_convert/*: u32*/ = "42".parse().expect("Not a number!"); // incorrect: type must be specified explicitely
+
+    // display
+    println!("number is {}, number_auto is {}", number, number_auto);
 }
 ```
 
@@ -230,7 +232,18 @@ fn main() {
     let second = a[1];
 
     // invalid element access
-    let element = a[10];                // compiles fine; panics at runtime
+    let idx = 11;
+    let element = a[idx];               // compiles fine; panics at runtime
+    let element = a[10];                // does not compile; the index is known at compile time
+
+    // the number of elements
+    let length = a.len();
+
+    // try to display the elements
+    println!("a: {}", a);   // error
+
+    // display using debug
+    println!("a: {:?}", a);
 }
 ```
 
@@ -1390,9 +1403,9 @@ fn some_function<T, U>(t: T, u: U) -> i32
 
 ```rust
 fn largest<T: PartialOrd>(list: &[T]) -> &T {
-    let mut largest = list[0];
+    let mut largest = &list[0];
 
-    for &item in list.iter() {
+    for item in list.iter() {
         if item > largest {
             largest = item;
         }
