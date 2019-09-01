@@ -99,6 +99,35 @@ cargo run
 
 ## Language
 
+### Syntax overview
+
+- a function named **main** must exist
+- when a program is run, the code in **main** is executed
+- must be written in **main**
+    - variable declarations
+    - function calls
+    - other statements and expressions
+- should be written outside of **main**
+    - structure declarations
+    - enum declarations
+    - function definitions
+- code blocks
+    - contained between `{` and `}`
+    - optionally, the body can end in an **expression** (returns a value)
+    - consists of a series of **statements**, each ending in **semicolon** (does not return a value)
+    - can end with an **expression** (returns a value)
+        - `WARNING`: **expressions** do not include ending **semicolon**; if semicolon is added to the end of an expression, it is turned into a **statement** and it won't return any value
+- comments:
+    - line: `//`
+    - block: `/* */`
+- `!` after an identifier means it is a **macro**; must always include the `!` when called
+    - **macros** are not covered here, the important thing is to think about them as functions
+    - we will encounter the following macros:
+        - `println!`
+        - `format!`
+        - `vec!`
+        - `panic!`
+
 ### Variables and mutability
 
 - by default, the variables are immutable (the value cannot be changed after the initialization)
@@ -222,9 +251,6 @@ fn main() {
 
 - may have a return type or not
 - may have none, one or more parameters
-- the body is made up of a series of **statements** (no value returned)
-- optionally, the body can end in an **expression** (returns a value)
-- `WARNING`: **expressions** do not include ending **semicolon**; if semicolon is added to the end of an expression, it is turned into a **statement** and it won't return any value
 
 #### Function without parameters, no return value
 
