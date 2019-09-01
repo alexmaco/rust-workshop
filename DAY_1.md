@@ -888,11 +888,13 @@ fn main() {
 - **None** means the value of type T is not present, cannot be used as a valid value
 
 ```rust
+// this is alreay defined in the standard library
 // T is replaced with any type we need when using the enum
-enum Option<T> {
-    Some(T),
-    None,
-}
+//
+// enum Option<T> {
+//     Some(T),
+//     None,
+// }
 
 fn positive(n: i32) -> Option<i32> {
     if n > 0 {
@@ -1024,44 +1026,46 @@ fn main() {
 
 ```rust
 // create an empty vector
-let v1: Vec<i32> = Vec::new();
+fn main() {
+    let v1: Vec<i32> = Vec::new();
 
-// create a vector with initial values
-let v2 = vec![1, 2, 3];
+    // create a vector with initial values
+    let v2 = vec![1, 2, 3];
 
-// insert elements
-let mut v2 = Vec::new();
+    // insert elements
+    let mut v2 = Vec::new();
 
-v2.push(5);
-v2.push(6);
-v2.push(7);
-v2.push(8);
+    v2.push(5);
+    v2.push(6);
+    v2.push(7);
+    v2.push(8);
 
-// remove last element
-match v2.pop() {
-    Some(last) => println!("The last element was {}", last),
-    None => println!("Empty vector"),
-}
+    // remove last element
+    match v2.pop() {
+        Some(last) => println!("The last element was {}", last),
+        None => println!("Empty vector"),
+    }
 
-// access elements
-let third: &i32 = &v2[2];   // crash if index is out of bounds
-println!("The third element is {}", third);
+    // access elements
+    let third: &i32 = &v2[2];   // crash if index is out of bounds
+    println!("The third element is {}", third);
 
-match v2.get(2) {           // returns None if index is out of bounds
-    Some(third) => println!("The third element is {}", third),
-    None => println!("There is no third element."),
-}
+    match v2.get(2) {           // returns None if index is out of bounds
+        Some(third) => println!("The third element is {}", third),
+        None => println!("There is no third element."),
+    }
 
-// iterate over the values
-let v3 = vec![100, 32, 57];
-for i in v3.iter() {
-    println!("{}", i);
-}
+    // iterate over the values
+    let v3 = vec![100, 32, 57];
+    for i in v3.iter() {
+        println!("{}", i);
+    }
 
-// iterate and modify each element in the vector
-let mut v4 = vec![100, 32, 57];
-for i in v4.iter_mut() {
-    *i += 50;   // add 50 to each element
+    // iterate and modify each element in the vector
+    let mut v4 = vec![100, 32, 57];
+    for i in v4.iter_mut() {
+        *i += 50;   // add 50 to each element
+    }
 }
 ```
 
@@ -1076,31 +1080,33 @@ for i in v4.iter_mut() {
 ```rust
 use std::collections::HashMap;
 
-// create an empty map
-let mut scores = HashMap::new();
+fn main() {
+    // create an empty map
+    let mut scores = HashMap::new();
 
-// insert elements
-scores.insert(String::from("Blue"), 10);
-scores.insert(String::from("Yellow"), 50);
+    // insert elements
+    scores.insert(String::from("Blue"), 10);
+    scores.insert(String::from("Yellow"), 50);
 
-// overwrite values
-scores.insert(String::from("Blue"), 25);
+    // overwrite values
+    scores.insert(String::from("Blue"), 25);
 
-// insert only if the key has no value
-scores.entry(String::from("Yellow")).or_insert(50);
-scores.entry(String::from("Green")).or_insert(50);
+    // insert only if the key has no value
+    scores.entry(String::from("Yellow")).or_insert(50);
+    scores.entry(String::from("Green")).or_insert(50);
 
-// remove elements
-let team_name1 = String::from("Green");
-scores.remove(&team_name1);  // returns an Option<V>
+    // remove elements
+    let team_name1 = String::from("Green");
+    scores.remove(&team_name1);  // returns an Option<V>
 
-// access values
-let team_name2 = String::from("Blue");
-let score = scores.get(&team_name2);     // returns an Option<&V>
+    // access values
+    let team_name2 = String::from("Blue");
+    let score = scores.get(&team_name2);     // returns an Option<&V>
 
-// iterate through the values
-for (key, value) in &scores {
-    println!("{}: {}", key, value);     // the order is arbitrary
+    // iterate through the values
+    for (key, value) in &scores {
+        println!("{}: {}", key, value);     // the order is arbitrary
+    }
 }
 ```
 
@@ -1151,10 +1157,12 @@ fn main() {
   - it must be called inside a function that returns **Result**
 
 ```rust
-enum Result<T, E> {
-    Ok(T),          // T is the type of the value returned in case of success
-    Err(E),         // E is the type of the value returned in case of failure
-}
+// this is already defined in the standard library
+//
+// enum Result<T, E> {
+//     Ok(T),          // T is the type of the value returned in case of success
+//     Err(E),         // E is the type of the value returned in case of failure
+// }
 ```
 
 ```rust
@@ -1557,4 +1565,3 @@ mod tests_1 {
     - if n == 0, return Some(1)
     - if n >= 0, return Some(1 * 2 * 3 * ... * (n-1))
 - write a set of tests to verify the behavior of the written function for various inputs
-
