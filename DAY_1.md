@@ -241,10 +241,17 @@ fn main() {
 
   - declare 3 numbers
   - compute the **average** of them and store the result in a variable
+    - average = sum of the values divided by the number of values
   - display the result with
 
     ```rust
     println!("Result: {}", result);
+    ```
+  - conversions from **int** to **float** must be done explicitly
+
+    ```rust
+    let int_value = 42;
+    let float_value = int_value as f32;
     ```
 
 ### Functions
@@ -309,7 +316,7 @@ let result = my_func(0);
 
 - modify the code from Exercise 1 (average)
 - extract the computing of average in a function
-- call the function for multiple sets of values
+- call the function multiple times, with various sets of values
 
 ### Conditions (if expressions)
 
@@ -445,6 +452,9 @@ fn iterate_x_times_for(x: u32) {
 
 - define an **array** variable that contains some **u32** values
 - display for each number if it is prime or not (a number is prime if it is divisible only by 1 and itself)
+    - for each number **n** in the array, iterate through all the numbers **i** between **2** and **n/2**
+        - if `n % i == 0`, then **n** is not prime; continue with the next element
+        - if after checking all the possible **i** for **n**, none satisfy the condition, **n** is prime
 
 ### Strings
 
@@ -760,10 +770,13 @@ println!("user1: {:?}", user1);
 
 #### Exercise 4 (rectangle area)
 
-- define a structure to hold a **Rectangle**
+- define a structure to hold a **Rectangle**, with the following fields
+    - width
+    - height
 - instantiate one **Rectangle**
 - display the **Rectangle**
 - write a function to compute the area of the **Rectangle**
+    - `area = width * height`
 
 #### Methods
 
@@ -948,8 +961,13 @@ if let Some(3) = some_u8_value {
 
 #### Exercise 6 (time)
 
-- define an enum **Time** for various time units (seconds, minutes, hours etc), each containing an integer value
+- define an enum **Time** for various time units, each containing an integer value:
+    - seconds
+    - minutes
+    - hours
 - write a function that receives a **Time** value and computes the number of seconds corresponding to it
+    - `seconds = minutes * 60`
+    - `seconds = hours * 3600`
 
 ### Collections
 
@@ -1041,8 +1059,13 @@ for (key, value) in &scores {
 
 #### Exercise 7 (number of occurrences)
 
-- declare a vector containing some integers
+- declare some **Vec** instances containing some integers
+- obtain a larger **Vec** that contains the elements in all the smaller **Vec** instances (see [Documentation for Vec](https://doc.rust-lang.org/std/vec/struct.Vec.html))
 - compute the number of occurrences for each element in the vector
+    - initialize a **HashMap** to count the occurences (see [Documentation for HashMap](https://doc.rust-lang.org/std/collections/struct.HashMap.html))
+    - for each **n** in the vector
+        - if **n** is not in the **HashMap**, add a value of **1** corresponding to **n**
+        - if **n** is in the **HashMap**, read the corresponding value, then increment it and store it back in the **HashMap**
 
 ### Error handling
 
@@ -1482,7 +1505,8 @@ mod tests_1 {
 #### Exercise 8 (factorial)
 
 - define a function to compute the factorial of n, with argument n received as a signed value
-  - if n >= 0 return Some(n!)
-  - if n < 0 return None
+    - if n < 0, return None
+    - if n == 0, return Some(1)
+    - if n >= 0, return Some(1 * 2 * 3 * ... * (n-1))
 - write a set of tests to verify the behavior of the written function for various inputs
 
