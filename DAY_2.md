@@ -63,7 +63,7 @@ Basic manual usage:
 
 ```rust
 let v = vec![1, 2, 3];
-let mut it = v.iter(); // it is mutable to advance, but v is not mutable
+let mut it = v.iter(); // it is mutable to be able to advance, but v is not mutable
 
 println!("{:?}", it.next());
 println!("{:?}", it.next());
@@ -76,6 +76,7 @@ Frequently used methods:
 - [**map** : transforms using the given closure](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.map)
 - [**filter** : discard elements using closure](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.filter)
 - [**find** : get element if it exists](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.find)
+- [**enumerate** : also yields the index when interating](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.enumerate)
 - [**collect**: gather elements into Vec/HashMap/String/etc](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.collect)
 
 #### Iterator examples
@@ -109,7 +110,7 @@ let halves: Vec<u32> = v.into_iter()
     .collect();
 ```
 
-#### A complicated example
+#### Example: parsing "key=value" strings
 
 - Maps and sets (like HashMap) can be used with iterators
 - we can **collect()** an iterator of 2-element tuples into a **HashMap**
@@ -160,7 +161,10 @@ for pair in string_pairs {
 println!("{:?}", actual_map);
 ```
 
-We can simplify: we can separate a parse function, so we can use the "?" error propagation operator on Options
+We can simplify: we can separate a parse function, so we can use the "?" error propagation operator on **Option**.
+**"?"** works on **Option** just as it does with **Result**:
+    - if the option is **Some(val)**, it returns the contained val
+    - if it is **None**, it returns **None** from the function
 
 ```rust
 // Version 2
@@ -172,7 +176,7 @@ fn parse_pair(pair: &str) -> Option<(String, u32)> {
     let key = pieces.next()?;
     let val = pieces.next()?;
 
-    let val_num: u32 = val.parse().ok()?;
+    let val_num: u32 = val.parse().ok()?; // .ok() on a Result will yield an Option<T>, and discard the error if any
 
     Some((String::from(key), val_num))
 }
@@ -198,7 +202,7 @@ println!("{:?}", actual_map);
 One more simplification: we can iterate over the vector, generate pairs, and collect into a HashMap
 
 ```rust
-// Version 2
+// Version 3
 use std::collections::HashMap;
 
 fn parse_pair(pair: &str) -> Option<(String, u32)> {
@@ -225,6 +229,7 @@ println!("{:?}", actual_map);
 Most compact version:
 
 ```rust
+// Version 4
 use std::collections::HashMap;
 
 let string_pairs = vec!["A=4", "B=X", "C=20", "QWE"];
@@ -243,6 +248,17 @@ let actual_map: HashMap<String, u32> = string_pairs.iter()
 
 println!("{:?}", actual_map);
 ```
+
+#### Exercise: iterators
+
+Given the resulting map from the exercise above, reverse the process
+- create a HashMap<String, u32>
+- fill it with some values
+- iterate the map
+- apply some transformations as above to create strings of the form "key=value"
+- concatenate all created strings, with a `\n` in-between
+
+Hint: if you have an iterator over **String** or **&str** items, you can use **collect()** to concatenate it all into a single string
 
 
 ### External libraries
