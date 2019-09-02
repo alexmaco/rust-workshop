@@ -104,29 +104,29 @@ cargo run
 - a function named **main** must exist
 - when a program is run, the code in **main** is executed
 - must be written in **main**
-    - variable declarations
-    - function calls
-    - other statements and expressions
+  - variable declarations
+  - function calls
+  - other statements and expressions
 - should be written outside of **main**
-    - structure declarations
-    - enum declarations
-    - function definitions
+  - structure declarations
+  - enum declarations
+  - function definitions
 - code blocks
-    - contained between `{` and `}`
-    - optionally, the body can end in an **expression** (returns a value)
-    - consists of a series of **statements**, each ending in **semicolon** (does not return a value)
-    - can end with an **expression** (returns a value)
-        - `WARNING`: **expressions** do not include ending **semicolon**; if semicolon is added to the end of an expression, it is turned into a **statement** and it won't return any value
+  - contained between `{` and `}`
+  - optionally, the body can end in an **expression** (returns a value)
+  - consists of a series of **statements**, each ending in **semicolon** (does not return a value)
+  - can end with an **expression** (returns a value)
+    - `WARNING`: **expressions** do not include ending **semicolon**; if semicolon is added to the end of an expression, it is turned into a **statement** and it won't return any value
 - comments:
-    - line: `//`
-    - block: `/* */`
+  - line: `//`
+  - block: `/* */`
 - `!` after an identifier means it is a **macro**; must always include the `!` when called
-    - **macros** are not covered here, the important thing is to think about them as functions
-    - we will encounter the following macros:
-        - `println!`
-        - `format!`
-        - `vec!`
-        - `panic!`
+  - **macros** are not covered here, the important thing is to think about them as functions
+  - we will encounter the following macros:
+    - `println!`
+    - `format!`
+    - `vec!`
+    - `panic!`
 
 ### Variables and mutability
 
@@ -267,6 +267,7 @@ fn main() {
     ```rust
     println!("Result: {}", result);
     ```
+
   - conversions from **int** to **float** must be done explicitly
 
     ```rust
@@ -481,9 +482,9 @@ fn iterate_x_times_for(x: u32) {
 
 - define an **array** variable that contains some **u32** values
 - display for each number if it is prime or not (a number is prime if it is divisible only by 1 and itself)
-    - for each number **n** in the array, iterate through all the numbers **i** between **2** and **n/2**
-        - if `n % i == 0`, then **n** is not prime; continue with the next element
-        - if after checking all the possible **i** for **n**, none satisfy the condition, **n** is prime
+  - for each number **n** in the array, iterate through all the numbers **i** between **2** and **n/2**
+    - if `n % i == 0`, then **n** is not prime; continue with the next element
+    - if after checking all the possible **i** for **n**, none satisfy the condition, **n** is prime
 
 ### Strings
 
@@ -757,7 +758,7 @@ fn main() {
 - find a function to trim the surrounding spaces from each word (search the [Documentation for String](https://doc.rust-lang.org/std/string/struct.String.html))
 - obtain a new **String** by concatenating all the trimmed words, inserting a single space between them
 - example:
-    - [" hello  ", "    world    "] => "hello world "
+  - [" hello ", " world "] => "hello world "
 
 ### Structs
 
@@ -816,12 +817,12 @@ fn main() {
 #### Exercise 5 (rectangle area)
 
 - define a structure to hold a **Rectangle**, with the following fields
-    - width
-    - height
+  - width
+  - height
 - instantiate one **Rectangle**
 - display the **Rectangle**
 - write a function to compute the area of the **Rectangle**
-    - `area = width * height`
+  - `area = width * height`
 
 #### Methods
 
@@ -1028,12 +1029,12 @@ fn main() {
 #### Exercise 7 (time)
 
 - define an enum **Time** for various time units, each containing an integer value:
-    - seconds
-    - minutes
-    - hours
+  - seconds
+  - minutes
+  - hours
 - write a function that receives a **Time** value and computes the number of seconds corresponding to it
-    - `seconds = minutes * 60`
-    - `seconds = hours * 3600`
+  - `seconds = minutes * 60`
+  - `seconds = hours * 3600`
 
 ### Collections
 
@@ -1133,10 +1134,10 @@ fn main() {
 - declare some **Vec** instances containing some integers
 - obtain a larger **Vec** that contains the elements in all the smaller **Vec** instances (see [Documentation for Vec](https://doc.rust-lang.org/std/vec/struct.Vec.html))
 - compute the number of occurrences for each element in the vector
-    - initialize a **HashMap** to count the occurences (see [Documentation for HashMap](https://doc.rust-lang.org/std/collections/struct.HashMap.html))
-    - for each **n** in the vector
-        - if **n** is not in the **HashMap**, add a value of **1** corresponding to **n**
-        - if **n** is in the **HashMap**, read the corresponding value, then increment it and store it back in the **HashMap**
+  - initialize a **HashMap** to count the occurences (see [Documentation for HashMap](https://doc.rust-lang.org/std/collections/struct.HashMap.html))
+  - for each **n** in the vector
+    - if **n** is not in the **HashMap**, add a value of **1** corresponding to **n**
+    - if **n** is in the **HashMap**, read the corresponding value, then increment it and store it back in the **HashMap**
 
 ### Error handling
 
@@ -1583,7 +1584,7 @@ mod tests_1 {
 #### Exercise 10 (factorial)
 
 - define a function to compute the factorial of n, with argument n received as a signed value
-    - if n < 0, return None
-    - if n == 0, return Some(1)
-    - if n >= 0, return Some(1 * 2 * 3 * ... * (n-1))
+  - if n < 0, return None
+  - if n == 0, return Some(1)
+  - if n >= 0, return Some(1 _ 2 _ 3 _ ... _ (n-1))
 - write a set of tests to verify the behavior of the written function for various inputs
