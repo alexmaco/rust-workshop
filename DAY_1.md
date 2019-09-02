@@ -1527,9 +1527,31 @@ impl<T: Display + PartialOrd> Pair<T> {
 }
 ```
 
-#### Exercise 9 (generics + traits)
+#### Exercise 9 (shapes)
 
-< TBD >
+- define a trait **Shape** with the following methods:
+  - **area** (compute the area of a shape)
+  - **perimeter** (compute the perimeter of a shape)
+- use: `use std::f32;`
+- use **f32** for the type of the fields
+- define a set of **struct** for shapes and implement **Shape** for each of them:
+  - **struct Circle**
+    - fields: **radius**
+    - area: `f32::consts::PI * radius * radius`
+    - perimeter: `2.0 * f32::consts::PI * radius`
+  - **struct Rectangle**
+    - fields: **width**, **length**
+    - area: `width * length`
+    - perimeter: `2.0 * (width + length)`
+  - **struct Triangle**
+    - fields: **a**, **b**, **c**
+    - area: `(s * (s - a) * (s - b) * (s - c)).sqrt()`
+      - where `s = (a + b + c) / 2.0)`
+    - perimeter: `a + b + c`
+- declare a **Vec** of objects that implement the **Shape** trait and populate it with instances of **Circle**, **Rectangle**, **Triangle**
+- iterate over the elements in the vector and:
+  - compute the total perimeter (sum of the perimeter of all the shapes)
+  - total area (sum of the areas of all the shapes)
 
 ### Tests
 
