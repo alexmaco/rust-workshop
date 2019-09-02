@@ -99,6 +99,35 @@ cargo run
 
 ## Language
 
+### Basics and Syntax overview
+
+- a function named **main** must exist
+- when a program is run, the code in **main** is executed
+- must be written in **main**
+  - variable declarations
+  - function calls
+  - other statements and expressions
+- should be written outside of **main**
+  - structure declarations
+  - enum declarations
+  - function definitions
+- code blocks
+  - contained between `{` and `}`
+  - optionally, the body can end in an **expression** (returns a value)
+  - consists of a series of **statements**, each ending in **semicolon** (does not return a value)
+  - can end with an **expression** (returns a value)
+    - `WARNING`: **expressions** do not include ending **semicolon**; if semicolon is added to the end of an expression, it is turned into a **statement** and it won't return any value
+- comments:
+  - line: `//`
+  - block: `/* */`
+- `!` after an identifier means it is a **macro**; must always include the `!` when called
+  - **macros** are not covered here, the important thing is to think about them as functions
+  - we will encounter the following macros:
+    - `println!`
+    - `format!`
+    - `vec!`
+    - `panic!`
+
 ### Variables and mutability
 
 - by default, the variables are immutable (the value cannot be changed after the initialization)
@@ -137,8 +166,10 @@ fn main() {
     let number: u32 = 42;   // type specified explicitly
     let number_auto = 42;   // type inferred (integer)
 
-    let number_convert = "42".parse().expect("Not a number!"); // incorrect: type must be specified
-    let number_convert_type: u32 = "42".parse().expect("Not a number!"); // type specified explicitly
+    let number_convert/*: u32*/ = "42".parse().expect("Not a number!"); // incorrect: type must be specified explicitely
+
+    // display
+    println!("number is {}, number_auto is {}", number, number_auto);
 }
 ```
 
@@ -148,6 +179,7 @@ fn main() {
 fn main() {
     let x = 2.0;        // f64
     let y: f32 = 3.0;   // f32
+    let z: f32 = 5;     // error; conversion from int to float is not made implicitly
 }
 ```
 
@@ -185,14 +217,20 @@ fn main() {
     let five_hundred = tup.0;
     let six_point_four = tup.1;
     let one = tup.2;
+
+    // invalid access
+    let error = tup.3;      // does not compile
 }
 ```
 
 #### Array [..., ...]
 
+- has fixed size
+
 ```rust
 fn main() {
-    let a: [i32; 5] = [1, 2, 3, 4, 5];  // element type and number defined explicitly
+    let a: [i32; 5] = [1, 2, 3, 4/*, 5*/];  // element type and number defined explicitly
+                                            // error: the number of elements declared must match the number of elements intialized
     let b = [1, 2, 3, 4, 5];            // element type and number inferred
     let c = [3; 5];                     // 3 repeated 5 times: [3, 3, 3, 3, 3]
 
@@ -201,7 +239,18 @@ fn main() {
     let second = a[1];
 
     // invalid element access
-    let element = a[10];                // compiles fine; panics at runtime
+    let idx = 11;
+    let element = a[idx];               // compiles fine; panics at runtime
+    let element = a[10];                // does not compile; the index is known at compile time
+
+    // the number of elements
+    let length = a.len();
+
+    // try to display the elements
+    println!("a: {}", a);   // error
+
+    // display using debug
+    println!("a: {:?}", a);
 }
 ```
 
@@ -212,19 +261,24 @@ fn main() {
 
   - declare 3 numbers
   - compute the **average** of them and store the result in a variable
+    - average = sum of the values divided by the number of values
   - display the result with
 
     ```rust
     println!("Result: {}", result);
     ```
 
+  - conversions from **int** to **float** must be done explicitly
+
+    ```rust
+    let int_value = 42;
+    let float_value = int_value as f32;
+    ```
+
 ### Functions
 
 - may have a return type or not
 - may have none, one or more parameters
-- the body is made up of a series of **statements** (no value returned)
-- optionally, the body can end in an **expression** (returns a value)
-- `WARNING`: **expressions** do not include ending **semicolon**; if semicolon is added to the end of an expression, it is turned into a **statement** and it won't return any value
 
 #### Function without parameters, no return value
 
@@ -234,8 +288,10 @@ fn my_func() {
     println!("my_func");
 }
 
-// call
-my_func();
+fn main() {
+    // call
+    my_func();
+}
 ```
 
 #### Function with parameters, no return value
@@ -252,12 +308,16 @@ fn my_func2(x: i32, y: u8) {
     println!("my_func2, x: {}, y: {}", x, y);
 }
 
-// call
-my_func1(42);
-my_func2(1, 2);
+fn main() {
+    // call
+    my_func1(/*42*/);       // error: all the expected arguments must be passed at call time
+    my_func2(1/*, 2*/);     // error: all the expected arguments must be passed at call time
+}
 ```
 
 #### Function with parameters, with return value
+
+If a function returns a value, the type of the return value must always be declared in the function's signature.
 
 ```rust
 // definition
@@ -265,25 +325,27 @@ fn my_func(x: i32) -> bool {
     println!("my_func, x: {}", x);
 
     // explicit return (statement, must end with semicolon)
-    return x == 1;
+    /* return x == 1; */    // error: must return a bool value
 }
 
-fn my_func2(x: i32) -> bool {
+fn my_func2(x: i32) /*-> bool*/ {   // error: the function must declare the return type if the body returns a value
     println!("my_func, x: {}", x);
 
     // implicit return (expression, no ending semicolon)
     x < 5
 }
 
-// call
-let result = my_func(0);
+fn main() {
+    // call
+    let result = my_func(0);
+}
 ```
 
 #### Exercise 2 (average with functions)
 
 - modify the code from Exercise 1 (average)
 - extract the computing of average in a function
-- call the function for multiple sets of values
+- call the function multiple times, with various sets of values
 
 ### Conditions (if expressions)
 
@@ -292,6 +354,7 @@ let result = my_func(0);
   - both branches must return values of the same type
   - if the branches don't return a value, the return is **()** called **unit type**
 - the condition **must** be a **bool**
+- it is not necessary to surround the condition with `()`
 
 ```rust
 fn main() {
@@ -409,7 +472,7 @@ fn main() {
 }
 
 fn iterate_x_times_for(x: u32) {
-    for i in (0..x) {
+    for i in 0..x {     // does not include x: 0, 1, ..., x-1
         println!("Iteration {}", i);
     }
 }
@@ -419,15 +482,25 @@ fn iterate_x_times_for(x: u32) {
 
 - define an **array** variable that contains some **u32** values
 - display for each number if it is prime or not (a number is prime if it is divisible only by 1 and itself)
+  - for each number **n** in the array, iterate through all the numbers **i** between **2** and **n/2**
+    - if `n % i == 0`, then **n** is not prime; continue with the next element
+    - if after checking all the possible **i** for **n**, none satisfy the condition, **n** is prime
 
 ### Strings
 
 - type: **String**
+- a **string literal** is hardcoded into the text of the program
+  - it is immutable
+  - must be known at compile time
+- **String** allocates a dynamic buffer, at runtime
+  - **owns** the data
+  - deallocates the data when it goes out of scope
 
 ```rust
 fn main() {
     let literal = "hello";              // literal string
-    let mut s = String::from(literal);  // string object
+    let s = String::from(literal);      // string object
+    let mut s: String = "hello";        // error: String must be constructed explicitly from a literal
 
     s.push_str(" world!");              // append string
 
@@ -556,7 +629,7 @@ fn calculate_length(s: &String) -> usize { // s is a reference to a String
 fn main() {
     let mut s = String::from("hello");
 
-    change(&mut s);
+    change(&/*mut*/ s);     // error: mut must be specified when the reference is taken
 }
 
 fn change(some_string: &mut String) {
@@ -601,6 +674,8 @@ fn dangle() -> &String {
     let s = String::from("hello");
 
     &s          // error: this reference would be dangling when s goes out of scope
+
+    // s goes out of scope and its value is dropped
 }
 ```
 
@@ -636,8 +711,8 @@ let slice = &s[..];
 fn first_word(s: &String) -> &str {
     let bytes = s.as_bytes();
 
-    for (i, &item) in bytes.iter().enumerate() {
-        if item == b' ' {
+    for (i, &item) in bytes.iter().enumerate() {    // enumerate returns a tuple (index, element)
+        if item == b' ' {   // ascii byte literal for space
             return &s[0..i];
         }
     }
@@ -676,15 +751,26 @@ fn main() {
 - similar to the String slices
 
 ```rust
-let a = [1, 2, 3, 4, 5];
+fn main() {
+    let a = [1, 2, 3, 4, 5];
 
-let slice = &a[1..3];   // slice has type &[i32]
+    let slice = &a[1..3];   // slice has type &[i32]
+}
 ```
+
+#### Exercise 4 (string manipulation)
+
+- declare an array of **String** objects, each element representing a word, surrounded by an arbitrary number of spaces before and after
+- find a function to trim the surrounding spaces from each word (search the [Documentation for String](https://doc.rust-lang.org/std/string/struct.String.html))
+- obtain a new **String** by concatenating all the trimmed words, inserting a single space between them
+- example:
+  - [" hello ", " world "] => "hello world "
 
 ### Structs
 
 - similar with tuples, but have names for the fields
 - the whole structure must be declared **mutable** or not; there is no control per field
+- similar to **struct** and **class** in other languages
 
 ```rust
 // definition
@@ -695,54 +781,60 @@ struct User {
     active: bool,
 }
 
-// instantiation
-let mut user = User {
-    email: String::from("someone@example.com"),
-    username: String::from("someusername123"),
-    active: true,
-    sign_in_count: 1,
-};
+fn main() {
+    // instantiation
+    let mut user = User {
+        email: String::from("someone@example.com"),
+        username: String::from("someusername123"),
+        active: true,
+        /*sign_in_count: 1,*/   // error: all the fields must be initialized
+    };
 
-// member access
-let active = user.active;
-user.email = String::from("other@example.com");
+    // member access
+    let active = user.active;
+    user.email = String::from("other@example.com");
 
-// instantiate using variables with the same name as the fields
-let username = String::from("user");
-let email = String::from("email");
+    // instantiate using variables with the same name as the fields
+    let username = String::from("user");
+    let email = String::from("email");
 
-let user1 = User {
-    username,           // equivalent to username: username
-    email,              // email: email
-    active: true,
-    sign_in_count: 1,
-};
+    let user1 = User {
+        username,           // equivalent to username: username
+        email,              // email: email
+        active: true,
+        sign_in_count: 1,
+    };
 
-// instantiate with some values from other instance
-let user2 = User {
-    username: String::from("foo"),
-    email::String::from("bar"),
-    ..user1                     // take the remaining values from user1
+    // instantiate with some values from other instance
+    let user2 = User {
+        username: String::from("foo"),
+        email::String::from("bar"),
+        ..user1                     // take the remaining values from user1
+    };
+
+    // try to display the struct
+    println!("user1: {}", user1);   // error
+
+    // display using debug; must also add #[derive(Debug)] before struct User
+    println!("user1: {:?}", user1);
 }
-
-// try to display the struct
-println!("user1: {}", user1);   // error
-
-// display using debug; must also add #[derive(Debug)] before struct User
-println!("user1: {:?}", user1);
 ```
 
-#### Exercise 4 (rectangle area)
+#### Exercise 5 (rectangle area)
 
-- define a structure to hold a **Rectangle**
+- define a structure to hold a **Rectangle**, with the following fields
+  - width
+  - height
 - instantiate one **Rectangle**
 - display the **Rectangle**
 - write a function to compute the area of the **Rectangle**
+  - `area = width * height`
 
 #### Methods
 
 - functions defined within the context of a structure
-- the first parameter can be the structure instance, **self**
+- the structure instance, **self**, can be passed as the first parameter
+- similar to normal functions, except for **self**
 - called using dot, like in other programming languages
 
 ```rust
@@ -767,7 +859,7 @@ fn main() {
 }
 ```
 
-#### Exercise 5 (rectangle area with method)
+#### Exercise 6 (rectangle area with method)
 
 - change the **area** function from **Exercise 4** to be a method on the struct **Rectangle**
 
@@ -810,7 +902,7 @@ fn main() {
         address: String::from("127.0.0.1"),
     };
 
-    let home2 = IpAddrEnum::V4(String::from("127.0.0.1"));
+    let home2 = IpAddrEnum::V4(/*String::from("127.0.0.1")*/);
 }
 ```
 
@@ -821,10 +913,20 @@ fn main() {
 - **None** means the value of type T is not present, cannot be used as a valid value
 
 ```rust
+// this is alreay defined in the standard library
 // T is replaced with any type we need when using the enum
-enum Option<T> {
-    Some(T),
-    None,
+//
+// enum Option<T> {
+//     Some(T),
+//     None,
+// }
+
+fn positive(n: i32) -> Option<i32> {
+    if n > 0 {
+        Some(n)
+    } else {
+        None
+    }
 }
 
 fn main() {
@@ -836,6 +938,13 @@ fn main() {
     // Option<T> cannot be used directly as T
     // the None case must be explicitly handled when the value is actually used
     let sum = 42 + some_number;         // error
+
+    // returned values
+    let r1 = positive(-1);
+    let r2 = positive(2);
+
+    println!("result1: {:?}", r1);
+    println!("result2: {:?}", r2);
 }
 ```
 
@@ -860,7 +969,7 @@ fn value_in_cents(coin: Coin) -> u8 {
         Coin::Penny => 1,
         Coin::Nickel => 5,
         Coin::Dime => 10,
-        Coin::Quarter => 25,
+        /*Coin::Quarter => 25,*/    // error: must handle all the possible enum values
     }
 }
 ```
@@ -893,9 +1002,11 @@ fn plus_one(x: Option<i32>) -> Option<i32> {
     }
 }
 
-let five = Some(5);
-let six = plus_one(five);
-let none = plus_one(None);
+fn main() {
+    let five = Some(5);
+    let six = plus_one(five);
+    let none = plus_one(None);
+}
 ```
 
 #### if let
@@ -906,24 +1017,30 @@ let none = plus_one(None);
 - can optionally have an **else**
 
 ```rust
+fn main() {
+    // match
+    let some_u8_value = Some(0u8);
+    match some_u8_value {
+        Some(3) => println!("three"),
+        _ => (),
+    }
 
-// match
-let some_u8_value = Some(0u8);
-match some_u8_value {
-    Some(3) => println!("three"),
-    _ => (),
-}
-
-// equivalent if let
-if let Some(3) = some_u8_value {
-    println!("three");
+    // equivalent if let
+    if let Some(3) = some_u8_value {
+        println!("three");
+    }
 }
 ```
 
-#### Exercise 6 (time)
+#### Exercise 7 (time)
 
-- define an enum **Time** for various time units (seconds, minutes, hours etc), each containing an integer value
+- define an enum **Time** for various time units, each containing an integer value:
+  - seconds
+  - minutes
+  - hours
 - write a function that receives a **Time** value and computes the number of seconds corresponding to it
+  - `seconds = minutes * 60`
+  - `seconds = hours * 3600`
 
 ### Collections
 
@@ -934,44 +1051,46 @@ if let Some(3) = some_u8_value {
 
 ```rust
 // create an empty vector
-let v1: Vec<i32> = Vec::new();
+fn main() {
+    let v1: Vec<i32> = Vec::new();
 
-// create a vector with initial values
-let v2 = vec![1, 2, 3];
+    // create a vector with initial values
+    let v2 = vec![1, 2, 3];
 
-// insert elements
-let mut v2 = Vec::new();
+    // insert elements
+    let mut v2 = Vec::new();
 
-v2.push(5);
-v2.push(6);
-v2.push(7);
-v2.push(8);
+    v2.push(5);
+    v2.push(6);
+    v2.push(7);
+    v2.push(8);
 
-// remove last element
-match v2.pop() {
-    Some(last) => println!("The last element was {}", last),
-    None => println!("Empty vector"),
-}
+    // remove last element
+    match v2.pop() {
+        Some(last) => println!("The last element was {}", last),
+        None => println!("Empty vector"),
+    }
 
-// access elements
-let third: &i32 = &v2[2];   // crash if index is out of bounds
-println!("The third element is {}", third);
+    // access elements
+    let third: &i32 = &v2[2];   // crash if index is out of bounds
+    println!("The third element is {}", third);
 
-match v2.get(2) {           // returns None if index is out of bounds
-    Some(third) => println!("The third element is {}", third),
-    None => println!("There is no third element."),
-}
+    match v2.get(2) {           // returns None if index is out of bounds
+        Some(third) => println!("The third element is {}", third),
+        None => println!("There is no third element."),
+    }
 
-// iterate over the values
-let v3 = vec![100, 32, 57];
-for i in v3.iter() {
-    println!("{}", i);
-}
+    // iterate over the values
+    let v3 = vec![100, 32, 57];
+    for i in v3.iter() {
+        println!("{}", i);
+    }
 
-// iterate and modify each element in the vector
-let mut v4 = vec![100, 32, 57];
-for i in v4.iter_mut() {
-    *i += 50;   // add 50 to each element
+    // iterate and modify each element in the vector
+    let mut v4 = vec![100, 32, 57];
+    for i in v4.iter_mut() {
+        *i += 50;   // add 50 to each element
+    }
 }
 ```
 
@@ -981,42 +1100,50 @@ for i in v4.iter_mut() {
 - uses a hashing function to determine the place for a specific element
   - the order of the elements may appear random
 - custom types can be used as keys; the **Hash** trait must be implemented (usually via #[derive(Hash)])
+- similar to **map**, **dict** in other languages
 
 ```rust
 use std::collections::HashMap;
 
-// create an empty map
-let mut scores = HashMap::new();
+fn main() {
+    // create an empty map
+    let mut scores = HashMap::new();
 
-// insert elements
-scores.insert(String::from("Blue"), 10);
-scores.insert(String::from("Yellow"), 50);
+    // insert elements
+    scores.insert(String::from("Blue"), 10);
+    scores.insert(String::from("Yellow"), 50);
 
-// overwrite values
-scores.insert(String::from("Blue"), 25);
+    // overwrite values
+    scores.insert(String::from("Blue"), 25);
 
-// insert only if the key has no value
-scores.entry(String::from("Yellow")).or_insert(50);
-scores.entry(String::from("Green")).or_insert(50);
+    // insert only if the key has no value
+    scores.entry(String::from("Yellow")).or_insert(50);
+    scores.entry(String::from("Green")).or_insert(50);
 
-// remove elements
-let team_name1 = String::from("Green");
-scores.remove(&team_name1);  // returns an Option<V>
+    // remove elements
+    let team_name1 = String::from("Green");
+    scores.remove(&team_name1);  // returns an Option<V>
 
-// access values
-let team_name2 = String::from("Blue");
-let score = scores.get(&team_name2);     // returns an Option<&V>
+    // access values
+    let team_name2 = String::from("Blue");
+    let score = scores.get(&team_name2);     // returns an Option<&V>
 
-// iterate through the values
-for (key, value) in &scores {
-    println!("{}: {}", key, value);     // the order is arbitrary
+    // iterate through the values
+    for (key, value) in &scores {
+        println!("{}: {}", key, value);     // the order is arbitrary
+    }
 }
 ```
 
-#### Exercise 7 (number of occurrences)
+#### Exercise 8 (number of occurrences)
 
-- declare a vector containing some integers
+- declare some **Vec** instances containing some integers
+- obtain a larger **Vec** that contains the elements in all the smaller **Vec** instances (see [Documentation for Vec](https://doc.rust-lang.org/std/vec/struct.Vec.html))
 - compute the number of occurrences for each element in the vector
+  - initialize a **HashMap** to count the occurences (see [Documentation for HashMap](https://doc.rust-lang.org/std/collections/struct.HashMap.html))
+  - for each **n** in the vector
+    - if **n** is not in the **HashMap**, add a value of **1** corresponding to **n**
+    - if **n** is in the **HashMap**, read the corresponding value, then increment it and store it back in the **HashMap**
 
 ### Error handling
 
@@ -1028,6 +1155,7 @@ for (key, value) in &scores {
 - panic can be called directly by our code or indirectly by other code that we call
 - by default the stacktrace of the program is not displayed at panic; it can be enabled with:
   - `RUST_BACKTRACE=1 cargo run`
+- similar to **assert** in other languages
 
 ```rust
 fn main() {
@@ -1048,16 +1176,18 @@ fn main() {
   - unwrap
   - expect (similar to unwrap, allows specifying an error message in case of failure)
 - **unwrap** and **expect** should be used when prototyping or in test code
-- errors can be propagated using **?**
+- errors can be propagated using `?`
   - if the result is **Ok**, the execution continues with the value contained inside
   - if the result is **Error**, the result is returned from the current function, for the calling code to process it
   - it must be called inside a function that returns **Result**
 
 ```rust
-enum Result<T, E> {
-    Ok(T),          // T is the type of the value returned in case of success
-    Err(E),         // E is the type of the value returned in case of failure
-}
+// this is already defined in the standard library
+//
+// enum Result<T, E> {
+//     Ok(T),          // T is the type of the value returned in case of success
+//     Err(E),         // E is the type of the value returned in case of failure
+// }
 ```
 
 ```rust
@@ -1163,7 +1293,7 @@ fn read_username_from_file() -> Result<String, io::Error> {
   - Result\<T, E>
   - Vec\<T>
   - HashMap\<K, V>
-- the compiler generates code for each instantiated type
+- the compiler generates code for each instantiated type (similar to templates in C++)
 
 ```rust
 struct Point<T> {
@@ -1239,7 +1369,7 @@ fn main() {
 
 - describe the shared behavior of types
 - the behavior of a type is the collection of methods that we can call on that type
-- group method signatures together (similar to an interface in other languages)
+- group method signatures together (similar to an **interface** in other languages)
 - when implementing the trait on a type all the methods of the trait must be defined
 - supported cases:
   - local trait definition, local type definition
@@ -1341,9 +1471,9 @@ fn some_function<T, U>(t: T, u: U) -> i32
 
 ```rust
 fn largest<T: PartialOrd>(list: &[T]) -> &T {
-    let mut largest = list[0];
+    let mut largest = &list[0];
 
-    for &item in list.iter() {
+    for item in list.iter() {
         if item > largest {
             largest = item;
         }
@@ -1396,6 +1526,32 @@ impl<T: Display + PartialOrd> Pair<T> {
     }
 }
 ```
+
+#### Exercise 9 (shapes)
+
+- define a trait **Shape** with the following methods:
+  - **area** (compute the area of a shape)
+  - **perimeter** (compute the perimeter of a shape)
+- use: `use std::f32;`
+- use **f32** for the type of the fields
+- define a set of **struct** for shapes and implement **Shape** for each of them:
+  - **struct Circle**
+    - fields: **radius**
+    - area: `f32::consts::PI * radius * radius`
+    - perimeter: `2.0 * f32::consts::PI * radius`
+  - **struct Rectangle**
+    - fields: **width**, **length**
+    - area: `width * length`
+    - perimeter: `2.0 * (width + length)`
+  - **struct Triangle**
+    - fields: **a**, **b**, **c**
+    - area: `(s * (s - a) * (s - b) * (s - c)).sqrt()`
+      - where `s = (a + b + c) / 2.0)`
+    - perimeter: `a + b + c`
+- declare a **Vec** of objects that implement the **Shape** trait and populate it with instances of **Circle**, **Rectangle**, **Triangle**
+- iterate over the elements in the vector and:
+  - compute the total perimeter (sum of the perimeter of all the shapes)
+  - total area (sum of the areas of all the shapes)
 
 ### Tests
 
@@ -1453,10 +1609,10 @@ mod tests_1 {
 }
 ```
 
-#### Exercise 8 (factorial)
+#### Exercise 10 (factorial)
 
 - define a function to compute the factorial of n, with argument n received as a signed value
-  - if n >= 0 return Some(n!)
-  - if n < 0 return None
+  - if n < 0, return None
+  - if n == 0, return Some(1)
+  - if n >= 0, return Some(1 \* 2 \* 3 \* ... \* (n-1))
 - write a set of tests to verify the behavior of the written function for various inputs
-
