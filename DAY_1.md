@@ -99,7 +99,7 @@ cargo run
 
 ## Language
 
-### Syntax overview
+### Basics and Syntax overview
 
 - a function named **main** must exist
 - when a program is run, the code in **main** is executed
@@ -179,7 +179,7 @@ fn main() {
 fn main() {
     let x = 2.0;        // f64
     let y: f32 = 3.0;   // f32
-    let z: f32 = 5;     // error; conversion must be made explicitly
+    let z: f32 = 5;     // error; conversion from int to float is not made implicitly
 }
 ```
 
@@ -489,6 +489,12 @@ fn iterate_x_times_for(x: u32) {
 ### Strings
 
 - type: **String**
+- a **string literal** is hardcoded into the text of the program
+  - it is immutable
+  - must be known at compile time
+- **String** allocates a dynamic buffer, at runtime
+  - **owns** the data
+  - deallocates the data when it goes out of scope
 
 ```rust
 fn main() {
@@ -623,7 +629,7 @@ fn calculate_length(s: &String) -> usize { // s is a reference to a String
 fn main() {
     let mut s = String::from("hello");
 
-    change(&/*mut*/ s);     // error: mut must be specified at call time
+    change(&/*mut*/ s);     // error: mut must be specified when the reference is taken
 }
 
 fn change(some_string: &mut String) {
@@ -1586,5 +1592,5 @@ mod tests_1 {
 - define a function to compute the factorial of n, with argument n received as a signed value
   - if n < 0, return None
   - if n == 0, return Some(1)
-  - if n >= 0, return Some(1 _ 2 _ 3 _ ... _ (n-1))
+  - if n >= 0, return Some(1 \* 2 \* 3 \* ... \* (n-1))
 - write a set of tests to verify the behavior of the written function for various inputs
