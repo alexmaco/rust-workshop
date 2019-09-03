@@ -39,107 +39,34 @@ fn main() {
 }
 ```
 
-### Combinators and transforms
+#### Exercise: transforming with functions
 
-- there are many common and repetitive operations done with `Option`, `Result`, etc.
-- these types provide small functions, to turn several lines of repeated code into a single call
+Part 1:
 
-[**Option::map**](https://doc.rust-lang.org/std/option/enum.Option.html#method.map) :
+- define a generic function that takes 2 arguments:
+    - a **Vec\<T>**
+    - any function **Fn(T) -> U**
+- the function should return a **Vec\<U>**
+- inside the function, for each element **T** in the input vector
+    - call the provided closure to construct a new **U**
+    - append the new value to the returned vector
+- call the function to process a Vec with a simple closure
 
-```rust
-let x: Option<u32> = Some(3);
-// Task: let's increment the value 'inside' the Option
+Part 2: try to make a few changes:
 
-// basic version
-let x2 = match x {
-    Some(val) => Some(val + 1),
-    _ => None,
-};
-
-// equivalent, shorter
-let x3 = x.map(|val| val + 1);
-```
-
-[**Option::and_then**](https://doc.rust-lang.org/std/option/enum.Option.html#method.and_then) :
-
-```rust
-fn correct_half(n: u32) -> Option<u32> {
-    if n % 2 == 0 {
-        Some(n / 2)
-    } else {
-        None // return nothing instead of rounding values
-    }
-}
-
-let x: Option<u32> = Some(3);
-// Task: pass the values inside x thru correct_half
-
-// x.map(correct_half) would result in Option<Option<u32>>
-
-// basic version
-let x2 = match x {
-    Some(val) => correct_half(val),
-    _ => None,
-};
-
-// equivalent, shorter
-let combined = x.and_then(|val| correct_half(val));
-// equivalent, shorter (2)
-let combined2 = x.and_then(correct_half);
-```
-
-[**Option::unwrap_or_else**](https://doc.rust-lang.org/std/option/enum.Option.html#method.unwrap_or_else) :
-
-```rust
-fn get_answer_from_server() -> u32 {
-    56 // just pretend this is complicated
-}
-
-let x = Some(3);
-// Task: get the 3, otherwise, get the answer from the server
-
-// basic version
-let v = match x {
-    Some(v) => v,
-    None => get_answer_from_server(),
-};
-
-// equivalent, shorter
-let v2 = x.unwrap_or_else(|| get_answer_from_server());
-```
-
-[**Option::as_ref**](https://doc.rust-lang.org/std/option/enum.Option.html#method.as_ref) :
-
-This example uses **as_mut**, which is the mutable counterpart of **as_ref**
-
-```rust
-let mut x = Some(3);
-// Task: increment the value inside x, but mutating it, not moving as above
-
-// basic version
-match &mut x {
-    Some(v) => *v += 1,
-    _ => {},
-}
-
-// equivalent, shorter
-x.as_mut().map(|v| *v += 1);
-
-println!("{:?}", x);
-```
-
-Other useful combinators on **Option** and **Result**:
-
-- **Result::map**, and **and_then** : similar to the Option methods
-- **Result::ok** : transform a **Result<T, E>** into an **Option\<T>** (keep the value, throw away the error)
-- **Option::ok_or**, and **ok_or_else** : transform an Option to Result, optionally setting an error
+- only pass a reference to the input **Vec\<T>**, and only reference its elements (you will need to change the closure signature)
+- when creating the closure, try to capture things from the enclosing scope
+    - try to use immutable reference to outer objects
+    - try to use mutable references to outer objects
+    - try to move things into and out of the closure
 
 
 ### Iterators
 
-The `Iterator` trait :
+The `Iterator` trait:
 
 ```rust
+// This is already defined in the standard library
 pub trait Iterator {
     type Item;
     fn next(&mut self) -> Option<Self::Item>;
@@ -158,7 +85,7 @@ Basic manual usage:
 
 ```rust
 let v = vec![1, 2, 3];
-let mut it = v.iter(); // it is mutable to advance, but v is not mutable
+let mut it = v.iter(); // it is mutable to be able to advance, but v is not mutable
 
 println!("{:?}", it.next());
 println!("{:?}", it.next());
@@ -171,6 +98,7 @@ Frequently used methods:
 - [**map** : transforms using the given closure](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.map)
 - [**filter** : discard elements using closure](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.filter)
 - [**find** : get element if it exists](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.find)
+- [**enumerate** : also yields the index when interating](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.enumerate)
 - [**collect**: gather elements into Vec/HashMap/String/etc](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.collect)
 
 #### Iterator examples
@@ -204,7 +132,7 @@ let halves: Vec<u32> = v.into_iter()
     .collect();
 ```
 
-#### A complicated example
+#### Example: parsing "key=value" strings
 
 - Maps and sets (like HashMap) can be used with iterators
 - we can **collect()** an iterator of 2-element tuples into a **HashMap**
@@ -228,7 +156,7 @@ let string_pairs = vec!["A=4", "B=X", "C=20", "QWE"];
 
 let mut actual_map: HashMap<String, u32> = HashMap::new();
 
-for pair in string_pairs {
+for pair in string_pairs.iter() {
     let mut pieces = pair.split('=');
     let maybe_key = pieces.next();
 
@@ -255,7 +183,10 @@ for pair in string_pairs {
 println!("{:?}", actual_map);
 ```
 
-We can simplify: we can separate a parse function, so we can use the "?" error propagation operator on Options
+We can simplify: we can separate a parsing function, so we can use the "?" error propagation operator on **Option**.
+**"?"** works on **Option** just as it does with **Result**:
+    - if the option is **Some(val)**, it returns the contained val
+    - if it is **None**, it returns **None** from the function
 
 ```rust
 // Version 2
@@ -267,7 +198,7 @@ fn parse_pair(pair: &str) -> Option<(String, u32)> {
     let key = pieces.next()?;
     let val = pieces.next()?;
 
-    let val_num: u32 = val.parse().ok()?;
+    let val_num: u32 = val.parse().ok()?; // .ok() on a Result will yield an Option<T>, and discard the error if any
 
     Some((String::from(key), val_num))
 }
@@ -276,7 +207,7 @@ let string_pairs = vec!["A=4", "B=X", "C=20", "QWE"];
 
 let mut actual_map: HashMap<String, u32> = HashMap::new();
 
-for pair in string_pairs {
+for pair in string_pairs.iter() {
     let maybe_pair = parse_pair(pair);
 
     let (k, v) = match maybe_pair {
@@ -293,7 +224,7 @@ println!("{:?}", actual_map);
 One more simplification: we can iterate over the vector, generate pairs, and collect into a HashMap
 
 ```rust
-// Version 2
+// Version 3
 use std::collections::HashMap;
 
 fn parse_pair(pair: &str) -> Option<(String, u32)> {
@@ -320,6 +251,7 @@ println!("{:?}", actual_map);
 Most compact version:
 
 ```rust
+// Version 4
 use std::collections::HashMap;
 
 let string_pairs = vec!["A=4", "B=X", "C=20", "QWE"];
@@ -338,6 +270,17 @@ let actual_map: HashMap<String, u32> = string_pairs.iter()
 
 println!("{:?}", actual_map);
 ```
+
+#### Exercise: iterators
+
+Given the resulting map from the exercise above, reverse the process
+- create a HashMap<String, u32>
+- fill it with some values
+- iterate the map
+- apply some transformations as above to create strings of the form "key=value"
+- concatenate all created strings, with a `\n` in-between
+
+Hint: if you have an iterator over **String** or **&str** items, you can use **collect()** to concatenate it all into a single string
 
 
 ### External libraries
