@@ -489,7 +489,7 @@ fn iterate_x_times_for(x: u32) {
 ### Strings
 
 - type: **String**
-- a **string literal** is hardcoded into the text of the program
+- a **string literal** is hardcoded into the program binary
   - it is immutable
   - must be known at compile time
 - **String** allocates a dynamic buffer, at runtime
@@ -1034,7 +1034,7 @@ fn main() {
 
 #### Exercise 7 (time)
 
-- define an enum **Time** for various time units, each containing an integer value:
+- define an enum **Time** for various time units, each variant containing an integer value:
   - seconds
   - minutes
   - hours
