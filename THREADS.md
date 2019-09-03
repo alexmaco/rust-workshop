@@ -61,7 +61,7 @@ handle_b.join().unwrap();
 
 ### Sharing data between threads
 
-We cannot share unsyncronized data (see `Sync` explanation below)
+We cannot share unsynchronized data (see `Sync` explanation below)
 
 ```rust
 use std::thread;

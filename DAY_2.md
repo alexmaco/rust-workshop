@@ -43,11 +43,11 @@ fn main() {
 
 Part 1:
 
-- define a generic function that takes 2 arguments:
+- define a generic function `apply_transform` that takes 2 arguments:
     - a **Vec\<T>**
     - any function **Fn(T) -> U**
-- the function should return a **Vec\<U>**
-- inside the function, for each element **T** in the input vector
+- `apply_transform` should return a **Vec\<U>**
+- inside `apply_transform`, for each element **T** in the input vector
     - call the provided closure to construct a new **U**
     - append the new value to the returned vector
 - call the function to process a Vec with a simple closure
@@ -59,6 +59,7 @@ Part 2: try to make a few changes:
     - try to use immutable reference to outer objects
     - try to use mutable references to outer objects
     - try to move things into and out of the closure
+    - observe the errors
 
 
 ### Iterators
@@ -274,7 +275,7 @@ println!("{:?}", actual_map);
 #### Exercise: iterators
 
 Given the resulting map from the exercise above, reverse the process
-- create a HashMap<String, u32>
+- create a `HashMap<String, u32>`
 - fill it with some values
 - iterate the map
 - apply some transformations as above to create strings of the form "key=value"
@@ -334,7 +335,7 @@ fn main() {
 }
 ```
 
-### Serde
+### JSON with the Serde crates
 
 - the [**serde_json**](https://crates.io/crates/serde_json) crate has support for (de)serialization to/from JSON
 - it can convert rust structs to JSON objects, rust `Vec`s to JSON arrays, etc.
@@ -344,7 +345,7 @@ Add in **Cargo.toml**:
 
 ```toml
 [dependencies]
-serde_derive = "1.0"
+serde_derive = "1.0" # this is needed for Serialize and Deserialize below
 serde_json = "1.0"
 ```
 
@@ -359,17 +360,81 @@ struct TheData {
     v: Vec<i32>,
 }
 
-let d = TheData { x: 5, s: "abcd".into(), v: vec![1,2,3] };
+fn main() {
+    let d = TheData { x: 5, s: "abcd".into(), v: vec![1,2,3] };
 
-let s = serde_json::to_string_pretty(&d).expect("serialization failed");
-println!("{}", s);
+    // TODO: add errors
 
-let recovered: TheData = match serde_json::from_str(&s) {
-    Ok(data) => data,
-    Err(e) => {
-        println!("deserialization error: {:?}", e);
-        return;
-    }
-};
+    let s = serde_json::to_string_pretty(&d).expect("serialization failed");
+    println!("{}", s);
+
+    let recovered: TheData = match serde_json::from_str(&s) {
+        Ok(data) => data,
+        Err(e) => {
+            println!("deserialization error: {:?}", e);
+            return;
+        }
+    };
+}
 ```
 
+#### Manipulating JSON values
+
+- the `serde_json` crate defines the `Value` enum
+    - it represents a JSON object
+    - `Value` is a regular enum, nothing special
+    - has many convenience methods
+- it is useful for exploring or creating a json value programatically
+- see the `docs.rs` page
+
+```rust
+use serde_json::Value;
+
+fn main() {
+    // this is the syntax for raw strings
+    // raw strings can be multiline, and can contain quotes
+    let text = r#"{
+        "a_key": {
+            "subkey_1": true,
+            "subkey_2": [15, "description"]
+        }
+    }"#;
+
+    // we can parse a value
+    let j: Value = serde_json::from_str(text).unwrap();
+
+    // we can explore with match
+    match j {
+        // :#? is also debug-printing, except the text is indented and not single-line
+        Value::Object(o) => println!("json root is an object {:#?}", o),
+        Value::Array(vec) => println!("json root is an array with {} elements", vec.len()),
+        _ => println!("json is something else"),
+    }
+
+    // we can construct values
+    let leaf = Value::Bool(false);
+    let num_leaf = Value::from(3);
+
+    let array_val = Value::Array(vec![leaf, num_leaf]);
+
+    // and serialize
+    println!("{}", serde_json::to_string(&array_val).unwrap());
+}
+```
+
+## Applications
+
+### CSV to HTML
+
+- use the code skeleton in the `convert` directory
+- it contains a simple HTML implementation
+- we want to parse a csv document (using the `csv`) crate, and print an HTML document containing a table with the csv data
+- instructions are present as comment blocks in `convert/src/main.rs`
+
+### HTML to JSON
+
+- start with the code from the solved exercise above
+- instead of printing the HTML at the end, write a function that walks the HTML node, and constructs a JSON value
+    - add `serde_json` as a dependency
+    - use `serde_json::Value` to represent the constructed JSON
+    - output the JSON text
