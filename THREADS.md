@@ -27,7 +27,7 @@ match join_handle.join() {
 
 ```rust
 // the closure for a thread can also capture values
-let exclusive = 4;
+let exclusive = "this_text".to_string();
 
 let handle_a = thread::spawn(move || {
     println!("took ownership of {}", exclusive);
@@ -61,7 +61,7 @@ handle_b.join().unwrap();
 
 ### Sharing data between threads
 
-We cannot share unsyncronized data (see `Sync` explanation below)
+We cannot share unsynchronized data (see `Sync` explanation below)
 
 ```rust
 use std::thread;
@@ -84,7 +84,7 @@ use std::sync::{Mutex, Arc};
 use std::thread;
 
 fn main() {
-    let counter = Arc::new(Mutex::new(0)); // creates an integer, wrapped in a mutex, wrapped in a shareable Arc
+    let counter = Arc::new(Mutex::new(0)); // creates an integer, wrapped in a mutex, wrapped in a reference-counted shared pointer
     let mut handles = vec![];
 
     for _ in 0..10 {
@@ -124,9 +124,8 @@ fn main() {
 `Sync` basic idea:
 
 - a `Vec` is not threadsafe:
-  - i.e. it is _not_ safe to mutate it from 2 threads
-  - so it is not safe to have 2 `&mut` references to it
-  - (but it is ok to have many shared references, readonly access is safe)
+  - i.e. it is _not_ safe to `push` or `pop` from 2 threads
+  - but it is ok to have many shared references, readonly iteration is safe
 - the compiler infers that `Vec` is not `Sync` (i.e. `Vec<T>: !Sync`)
   - the compiler does not allow mutable access from more than one thread
 - Some basic types are `Sync` and therefore safe
@@ -136,51 +135,60 @@ fn main() {
     - but plain `bool` is not
 
 
-## TODO: server example
+## Exercise: multithreaded server using serde_json
 
-```rust
-thread::spawn(move || {
-    let listener = TcpListener::bind("127.0.0.1:1234").unwrap();
+_Note_: this is intended to be simple and short, not optimal
+_Note_: the structure of this program is up to you. Feel free to use functions, traits, `Result`s, or anything else
 
-    loop {
-        let conn = listener.accept();
+### Part 1
 
-        thread::spawn(move || {
-            let (mut stream, remote) = match conn {
-                Ok(x) => x,
-                _ => return,
-            };
-            println!("new client connected from {}", remote);
+The first goal is to write a network server, that:
+- accepts TCP connections
+- receives a single-line json representing 2 (x,y) points
+- computes the midpoint (average)
+- responds with the midpoint, encoded as json
+- make it so that **no thread crashes**, on any error (i.e. no uses of `unwrap` or `expect`)
 
-            let mut buf = vec![];
+Tasks:
+1. create a new project, with serde_derive and serde_json as dependencies
+1. define (de)serializable structures (e.g. for Point)
+    1. check that they work as expected
+1. create a thread (or use the main one) that opens a listening TCP socket on localhost, and accepts new connections
+1. for each accepted connection, spawn a new (worker) thread
+1. on each worker thread, loop
+    1. read a line of input from the socket
+    1. deserialize the json request data
+    1. compute the midpoint
+    1. serialize the data
+    1. send it back over the socket
 
-            loop {
-                buf.clear();
-                let len = std::io::BufReader::new(&mut stream).read_until(b'\n', &mut buf);
-                if let Ok(0) = len {
-                    // connection closed. goodnight.
-                    return;
-                }
-                if let Err(e) = len {
-                    eprintln!("error receiving from client {}: {:?}", remote, e);
-                    return;
-                }
+Hints:
+- you can test this manually with `telnet` (`sudo apt install telnet`)
+- the standard lib has a `TCPListener` type
+- in order to read a line (i.e. until the '\n' character) use `std::io::BufReader` and `fn read_until`
+- to write, try `fn write_all`
+- to use succint error handling, it may be worth it to place code in a function that returns `Result`, and use `?` inside the function
+- if it helps, you can also use tests
 
-                let num: i64 = buf
-                    .as_slice()
-                    .map(|bytes| str::from_utf8(bytes))
-                    .and_then(|s| s.parse().ok());
+### Part 2
 
-                let reply = num.map(|x| x + 1);
+Adding basic shared state:
+- a Mutex, shared between the threads
+- the Mutex wraps a structure with fields that count the number of successful and error requests
+- set up a way to request or print the statistics while the server is running
 
-                match reply {
-                    Some(num) => stream.write_all(result.as_bytes()).unwrap(),
-                    None => stream.write_all("request not understood".as_bytes()),
-                }
-                stream.write_all(b"\n").unwrap();
-            }
-        });
-    }
-});
+Tasks (using the project from above):
+1. create a `Stats` struct with fields for `successful` and `failed` to count the requests
+1. early in the program, create a `Mutex<Stats>`
+1. wrap the mutex in an `Arc<T>` (threadsafe shared pointer), and hand out references to every worker thread
+1. on each worker thread:
+    1. when a request succeeds or fails, lock the mutex
+    1. increment the corresponding field
+    1. remember, that successfully receiving 0 bytes means the connection was closed, and is not an error condition
+1. choose and implement a way to print statistics: possible ideas:
+    - have a different thread that sleeps for 1 second, locks the mutex, writes the stats to stdout, and repeats
+    - introduce a new json request to let clients request the statistics instead of computing a midpoint
 
-```
+Hints:
+- if you haven't done so yet, it may be good to factor the parsing and responding logic in a function that returns a `Result` or `Option`. It will be easier to check if the result is success or error to increment the stats
+- a simple way to handle several kinds of json requests is to define an (de)serializable `enum`, with each variant holding the request`payload`

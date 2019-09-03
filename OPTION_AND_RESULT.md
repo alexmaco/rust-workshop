@@ -1,4 +1,4 @@
-# Opiton and Result
+# Option and Result
 
 - **Option** and **Result** are very common across most APIs
 - there are many common and repetitive operations done with `Option`, `Result`, etc.
