@@ -63,9 +63,10 @@ Part 2: try to make a few changes:
 
 ### Iterators
 
-The `Iterator` trait :
+The `Iterator` trait:
 
 ```rust
+// This is already defined in the standard library
 pub trait Iterator {
     type Item;
     fn next(&mut self) -> Option<Self::Item>;
@@ -155,7 +156,7 @@ let string_pairs = vec!["A=4", "B=X", "C=20", "QWE"];
 
 let mut actual_map: HashMap<String, u32> = HashMap::new();
 
-for pair in string_pairs {
+for pair in string_pairs.iter() {
     let mut pieces = pair.split('=');
     let maybe_key = pieces.next();
 
@@ -182,7 +183,7 @@ for pair in string_pairs {
 println!("{:?}", actual_map);
 ```
 
-We can simplify: we can separate a parse function, so we can use the "?" error propagation operator on **Option**.
+We can simplify: we can separate a parsing function, so we can use the "?" error propagation operator on **Option**.
 **"?"** works on **Option** just as it does with **Result**:
     - if the option is **Some(val)**, it returns the contained val
     - if it is **None**, it returns **None** from the function
@@ -206,7 +207,7 @@ let string_pairs = vec!["A=4", "B=X", "C=20", "QWE"];
 
 let mut actual_map: HashMap<String, u32> = HashMap::new();
 
-for pair in string_pairs {
+for pair in string_pairs.iter() {
     let maybe_pair = parse_pair(pair);
 
     let (k, v) = match maybe_pair {
