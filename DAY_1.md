@@ -1548,8 +1548,8 @@ impl<T: Display + PartialOrd> Pair<T> {
     - area: `(s * (s - a) * (s - b) * (s - c)).sqrt()`
       - where `s = (a + b + c) / 2.0)`
     - perimeter: `a + b + c`
-- declare a **Vec** of objects that implement the **Shape** trait and populate it with instances of **Circle**, **Rectangle**, **Triangle**
-- iterate over the elements in the vector and:
+- declare a **Vec\<Circle>**, a **Vec\<Rectangle>** and a **Vec\<Triangle>** and populate them with objects
+- write a function that receives a **Vec** of elements that implement **Shape**, iterates over the elements in the vector and:
   - compute the total perimeter (sum of the perimeter of all the shapes)
   - total area (sum of the areas of all the shapes)
 
