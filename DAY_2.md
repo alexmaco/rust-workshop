@@ -385,7 +385,7 @@ fn main() {
     - `Value` is a regular enum, nothing special
     - has many convenience methods
 - it is useful for exploring or creating a json value programatically
-- see the `docs.rs` page
+- see the <https://docs.rs> page !
 
 ```rust
 use serde_json::Value;
@@ -434,7 +434,7 @@ fn main() {
 ### HTML to JSON
 
 - start with the code from the solved exercise above
-- instead of printing the HTML at the end, write a function that walks the HTML node, and constructs a JSON value
+- instead of printing the HTML at the end, write a function that walks the HTML nodes, and constructs a JSON value
     - add `serde_json` as a dependency
     - use `serde_json::Value` to represent the constructed JSON
     - output the JSON text

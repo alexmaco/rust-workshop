@@ -84,7 +84,7 @@ use std::sync::{Mutex, Arc};
 use std::thread;
 
 fn main() {
-    let counter = Arc::new(Mutex::new(0)); // creates an integer, wrapped in a mutex, wrapped in a shareable Arc
+    let counter = Arc::new(Mutex::new(0)); // creates an integer, wrapped in a mutex, wrapped in a reference-counted shared pointer
     let mut handles = vec![];
 
     for _ in 0..10 {
@@ -124,9 +124,8 @@ fn main() {
 `Sync` basic idea:
 
 - a `Vec` is not threadsafe:
-  - i.e. it is _not_ safe to mutate it from 2 threads
-  - so it is not safe to have 2 `&mut` references to it
-  - (but it is ok to have many shared references, readonly access is safe)
+  - i.e. it is _not_ safe to `push` or `pop` from 2 threads
+  - but it is ok to have many shared references, readonly iteration is safe
 - the compiler infers that `Vec` is not `Sync` (i.e. `Vec<T>: !Sync`)
   - the compiler does not allow mutable access from more than one thread
 - Some basic types are `Sync` and therefore safe
