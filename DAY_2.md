@@ -39,6 +39,27 @@ fn main() {
 }
 ```
 
+#### Exercise: transforming with functions
+
+Part 1:
+
+- define a generic function that takes 2 arguments:
+    - a **Vec\<T>**
+    - any function **Fn(T) -> U**
+- the function should return a **Vec\<U>**
+- inside the function, for each element **T** in the input vector
+    - call the provided closure to construct a new **U**
+    - append the new value to the returned vector
+- call the function to process a Vec with a simple closure
+
+Part 2: try to make a few changes:
+
+- only pass a reference to the input **Vec\<T>**, and only reference its elements (you will need to change the closure signature)
+- when creating the closure, try to capture things from the enclosing scope
+    - try to use immutable reference to outer objects
+    - try to use mutable references to outer objects
+    - try to move things into and out of the closure
+
 
 ### Iterators
 
