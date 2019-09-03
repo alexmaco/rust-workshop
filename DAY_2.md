@@ -187,7 +187,7 @@ println!("{:?}", actual_map);
 We can simplify: we can separate a parsing function, so we can use the "?" error propagation operator on **Option**.  
 **"?"** works on **Option** just as it does with **Result**:
 
-- if the option is **Some(val)**, it returns the contained val
+- if the option is **Some(val)**, it gets the contained val
 - if it is **None**, it returns **None** from the function
 
 ```rust
