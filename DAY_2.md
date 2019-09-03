@@ -56,7 +56,7 @@ Part 2: try to make a few changes:
 
 - only pass a reference to the input **Vec\<T>**, and only reference its elements (you will need to change the closure signature)
 - when creating the closure, try to capture things from the enclosing scope
-    - try to use immutable reference to outer objects
+    - try to use immutable references to outer objects
     - try to use mutable references to outer objects
     - try to move things into and out of the closure
     - observe the errors
@@ -293,20 +293,20 @@ Hint: if you have an iterator over **String** or **&str** items, you can use **c
     - every package has a **Cargo.toml** file (the toml format is like a combination of ini and json)
     - we can add **lib_name = "version_number"** keys to the **[dependencies]** section
     - at build, cargo downloads and compiles the library
-- we can use thing
+- we can use things from the libraries as `crate_name::stuff_from_the_crate`
 - (advanced: also see **MODULES.md** for how **use** works)
 
 #### Where to find crates
 
 - [**crates.io**](https://crates.io/) : official package index
-- [**libs.rs**](https://libs.rs/) : alternative package search tool for information from crates.io
+- [**libs.rs**](https://libs.rs/) : alternative package search tool (same crates as above)
 
-Usually, every package published on crates.io will have automatically generated docs at **docs.rs/package_name**
+Usually, every package published on crates.io will have automatically generated docs at **https://docs.rs/package_name**
 
 #### Example crate usage
 
 Task:
-- extract words from some text
+- extract words from text
 - capitalize all words shorter than 5 letters, and discard the rest
 - collect all words in a vector
 
@@ -363,8 +363,6 @@ struct TheData {
 
 fn main() {
     let d = TheData { x: 5, s: "abcd".into(), v: vec![1,2,3] };
-
-    // TODO: add errors
 
     let s = serde_json::to_string_pretty(&d).expect("serialization failed");
     println!("{}", s);
