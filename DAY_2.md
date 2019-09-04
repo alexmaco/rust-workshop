@@ -122,7 +122,6 @@ In the example above:
     - calls the `next` of the underlying iterator
     - applies the function
     - then yields the value returned by the function
-- `map()` creates a new iterator, that is an adaptor over the old iterator
 - `collect()` does not create an iterator. It calls `next` on the iterator it receives, and adds all the elements it yields into the final collection
 
 Practical consequences:
