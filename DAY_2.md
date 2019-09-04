@@ -358,6 +358,7 @@ Add in **Cargo.toml**:
 
 ```toml
 [dependencies]
+serde = "1.0" # the serde core crate
 serde_derive = "1.0" # this is needed for Serialize and Deserialize below
 serde_json = "1.0"
 ```
