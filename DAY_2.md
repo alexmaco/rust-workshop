@@ -126,7 +126,7 @@ In the example above:
 - `collect()` does not create an iterator. It calls `next` on the iterator it receives, and adds all the elements it yields into the final collection
 
 Practical consequences:
-- iterators are "lazy": we can construct complicated iterations, and perform them later
+- iterators are "lazy": we can construct complicated iterations, and use them later
 - in order to perform an iteration on the spot, we usually use `for`, or call `.collect()`
 
 Usual methods to start iteration:
@@ -440,7 +440,7 @@ fn main() {
 
 - use the code skeleton in the `convert` directory
 - it contains a simple HTML implementation
-- we want to parse a csv document (using the `csv`) crate, and print an HTML document containing a table with the csv data
+- we want to parse a csv document (using the `csv` crate), and print an HTML document containing a table with the csv data
 - instructions are present as comment blocks in `convert/src/main.rs`
 
 ### HTML to JSON
