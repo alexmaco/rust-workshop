@@ -115,6 +115,20 @@ let squared: Vec<u32> = v.iter()
     .collect();
 ```
 
+In the example above:
+- `iter()` creates an iterator (but it does not advance, noone has called `next()`)
+- `map()` creates a new iterator, that is an adaptor over the old iterator
+  - every time `next` is called on this new iterator, it:
+    - calls the `next` of the underlying iterator
+    - applies the function
+    - then yields the value returned by the function
+- `map()` creates a new iterator, that is an adaptor over the old iterator
+- `collect()` does not create an iterator. It calls `next` on the iterator it receives, and adds all the elements it yields into the final collection
+
+Practical consequences:
+- iterators are "lazy": we can construct complicated iterations, and perform them later
+- in order to perform an iteration on the spot, we usually use `for`, or call `.collect()`
+
 Usual methods to start iteration:
 
 - `iter()` will iterate with references to the original elements
@@ -243,8 +257,7 @@ fn parse_pair(pair: &str) -> Option<(String, u32)> {
 let string_pairs = vec!["A=4", "B=X", "C=20", "QWE"];
 
 let actual_map: HashMap<String, u32> = string_pairs.iter()
-    .map(|pair| parse_pair) // now the iterator's elements are Option<(String, u32)>
-    .filter_map(|maybe_pair| maybe_pair) // now the element is (String, u32), all None are discarded by filter_map
+    .filter_map(|pair| parse_pair) // now the iterator's elements are (String, u32)
     .collect(); // we can collect an iterator with elements (K, V) into a HashMap
 
 println!("{:?}", actual_map);

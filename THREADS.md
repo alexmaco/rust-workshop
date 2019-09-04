@@ -118,7 +118,7 @@ fn main() {
 - if the type is safe to move to another thread, the compiler marks it with `Send`
   - e.g. `let x = 5;` or `let stuff = vec![1, 2, 3];` are both safe to `Send`
 - what is not `Send`:
-  - objects with a reference inside
+  - objects with a reference inside (e.g. `Option<&String>` is not send, since the other thread may outlive the reference)
   - e.g. `&mut Vec<T>`, a mutable ref to Vec cannot be `Send`, because 2 threads would be able to mutate it at the same time
 
 `Sync` basic idea:
