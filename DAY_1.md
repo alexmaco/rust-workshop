@@ -35,9 +35,9 @@ cargo new hello_world
 
 ```bash
 .
-|-- Cargo.toml      # project configuration file
-|-- src
-    |-- main.rs     # source code
+├── Cargo.toml      # project configuration file
+└── src
+    └── main.rs     # source code
 ```
 
 #### Cargo.toml
@@ -73,16 +73,16 @@ The files resulting after build
 
 ```bash
 .
-|-- Cargo.lock          # contains the exact versions of the dependencies used
-|-- Cargo.toml
-|-- src
-|   |-- main.rs
-|-- target
-    |-- debug
-    |   |-- ...
-    |   |-- hello_world     # the executable
-    |   |-- ...
-    |-- .rustc_info.json
+├── Cargo.lock          # contains the exact versions of the dependencies used
+├── Cargo.toml
+├── src
+│   └── main.rs
+└── target
+    ├── debug
+    │   ├── ...
+    │   ├── hello_world     # the executable
+    │   ├── ...
+    └── .rustc_info.json
 ```
 
 ### Run the compiled executable
@@ -200,6 +200,8 @@ fn main() {
 ```rust
 fn main() {
     let c = 'z';
+    let z = 'ℤ';
+    let heart_eyed_cat = '😻';
 }
 ```
 
