@@ -109,7 +109,7 @@ let v: Vec<u32> = vec![1, 2, 3];
 
 // frequently, collect()'ing from iterators requires
 // annotating the type of the destination collection
-// the compiler often suggest the annotation
+// the compiler often suggests the annotation
 let squared: Vec<u32> = v.iter()
     .map(|x| x * x)
     .collect();
@@ -176,7 +176,7 @@ for pair in string_pairs.iter() {
 
     let key = match maybe_key {
         Some(k) => k,
-        _ => continue, // this branch doe not return, instead continues the loop
+        _ => continue, // this branch does not return, instead continues the loop
     };
 
     let maybe_val = pieces.next();
@@ -311,7 +311,7 @@ Hint: if you have an iterator over **String** or **&str** items, you can use **c
 #### Where to find crates
 
 - [**crates.io**](https://crates.io/) : official package index
-- [**libs.rs**](https://libs.rs/) : alternative package search tool (same crates as above)
+- [**lib.rs**](https://lib.rs/) : alternative package search tool (same crates as above)
 
 Usually, every package published on crates.io will have automatically generated docs at **https://docs.rs/package_name**
 

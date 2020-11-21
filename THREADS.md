@@ -90,13 +90,13 @@ fn main() {
     for _ in 0..10 {
         let counter = Arc::clone(&counter); // gets a new handle to the shared mutex
         let handle = thread::spawn(move || {
-            let mut num = counter.lock().unwrap(); // locks the mutex
+            let mut guard = counter.lock().unwrap(); // locks the mutex
 
             // update data inside the mutex
             // this can only be done after lock, so it is always safe
-            *num += 1;
+            *guard += 1;
 
-            // mutex guard goes out of scope, and the mutex is closed
+            // mutex guard goes out of scope, and the mutex is unlocked
         });
         handles.push(handle);
     }
@@ -135,9 +135,9 @@ fn main() {
     - but plain `bool` is not
 
 
-## Exercise: multithreaded server using serde_json
+## Exercise: multithreaded server using `serde_json`
 
-_Note_: this is intended to be simple and short, not optimal
+_Note_: this is intended to be simple and short, not optimal<br/>
 _Note_: the structure of this program is up to you. Feel free to use functions, traits, `Result`s, or anything else
 
 ### Part 1
