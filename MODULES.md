@@ -42,7 +42,7 @@ fn main() {
 }
 ```
 
-## Modules for multifile projects
+## Modules for multi-file projects
 
 - modules can be written (and nested) in the same file
 - when splitting code into multiple files, one file == one module (with the same name)

@@ -166,7 +166,7 @@ fn main() {
     let number: u32 = 42;   // type specified explicitly
     let number_auto = 42;   // type inferred (integer)
 
-    let number_convert/*: u32*/ = "42".parse().expect("Not a number!"); // incorrect: type must be specified explicitely
+    let number_convert/*: u32*/ = "42".parse().expect("Not a number!"); // incorrect: type must be specified explicitly
 
     // display
     println!("number is {}, number_auto is {}", number, number_auto);
@@ -232,7 +232,7 @@ fn main() {
 ```rust
 fn main() {
     let a: [i32; 5] = [1, 2, 3, 4/*, 5*/];  // element type and number defined explicitly
-                                            // error: the number of elements declared must match the number of elements intialized
+                                            // error: the number of elements declared must match the number of elements initialized
     let b = [1, 2, 3, 4, 5];            // element type and number inferred
     let c = [3; 5];                     // 3 repeated 5 times: [3, 3, 3, 3, 3]
 
@@ -915,7 +915,7 @@ fn main() {
 - **None** means the value of type T is not present, cannot be used as a valid value
 
 ```rust
-// this is alreay defined in the standard library
+// this is already defined in the standard library
 // T is replaced with any type we need when using the enum
 //
 // enum Option<T> {
@@ -1142,7 +1142,7 @@ fn main() {
 - declare some **Vec** instances containing some integers
 - obtain a larger **Vec** that contains the elements in all the smaller **Vec** instances (see [Documentation for Vec](https://doc.rust-lang.org/std/vec/struct.Vec.html))
 - compute the number of occurrences for each element in the vector
-  - initialize a **HashMap** to count the occurences (see [Documentation for HashMap](https://doc.rust-lang.org/std/collections/struct.HashMap.html))
+  - initialize a **HashMap** to count the occurrences (see [Documentation for HashMap](https://doc.rust-lang.org/std/collections/struct.HashMap.html))
   - for each **n** in the vector
     - if **n** is not in the **HashMap**, add a value of **1** corresponding to **n**
     - if **n** is in the **HashMap**, read the corresponding value, then increment it and store it back in the **HashMap**

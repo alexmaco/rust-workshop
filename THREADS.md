@@ -167,7 +167,7 @@ Hints:
 - the standard lib has a `TCPListener` type
 - in order to read a line (i.e. until the '\n' character) use `std::io::BufReader` and `fn read_until`
 - to write, try `fn write_all`
-- to use succint error handling, it may be worth it to place code in a function that returns `Result`, and use `?` inside the function
+- to use succinct error handling, it may be worth it to place code in a function that returns `Result`, and use `?` inside the function
 - if it helps, you can also use tests
 
 ### Part 2

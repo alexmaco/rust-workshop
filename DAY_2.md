@@ -117,7 +117,7 @@ let squared: Vec<u32> = v.iter()
 
 In the example above:
 - `iter()` creates an iterator (but it does not advance, noone has called `next()`)
-- `map()` creates a new iterator, that is an adaptor over the old iterator
+- `map()` creates a new iterator, that is an adapter over the old iterator
   - every time `next` is called on this new iterator, it:
     - calls the `next` of the underlying iterator
     - applies the function
@@ -396,7 +396,7 @@ fn main() {
     - it represents a JSON object
     - `Value` is a regular enum, nothing special
     - has many convenience methods
-- it is useful for exploring or creating a json value programatically
+- it is useful for exploring or creating a json value programmatically
 - see the <https://docs.rs> page !
 
 ```rust

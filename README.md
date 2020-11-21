@@ -7,6 +7,6 @@ It's intended to give a hard-and-fast practical overview of the language, focuse
 
 ## TODO: more complete description
 
-## Acknowledgments
+## Acknowledgements
 
 This documentation was initially developed during the fall of 2019 at Keysight Technologies, in order to serve as support for an internal workshop on the Rust programming language.
