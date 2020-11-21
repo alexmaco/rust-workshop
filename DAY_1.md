@@ -258,11 +258,11 @@ fn main() {
 
 #### Exercise 1 (average)
 
-- following the above steps, create a new project
+- following the steps above, create a new project
 - in main:
 
   - declare 3 numbers
-  - compute the **average** of them and store the result in a variable
+  - compute their **average**, and store the result in a variable
     - average = sum of the values divided by the number of values
   - display the result with
 
@@ -352,7 +352,7 @@ fn main() {
 ### Conditions (if expressions)
 
 - **if** is an expression, thus returning a value
-  - the returned value is the one returned from the taken branch
+  - the returned value is the one returned from the branch that is taken
   - both branches must return values of the same type
   - if the branches don't return a value, the return is **()** called **unit type**
 - the condition **must** be a **bool**
@@ -412,10 +412,10 @@ fn main() {
 #### loop
 
 - **infinite loop**: repeats executing the body until explicitly stopped
-- options to stop the execution
+- to stop the execution:
   - kill the program (**CTRL + C**)
   - use **break** in the code
-- a value can be returned after **break**
+- a value can be returned using **break**
 
 ```rust
 fn main() {
@@ -516,12 +516,12 @@ fn main() {
 
 - ownership enables Rust to make memory safety guarantees without needing a garbage collector
 - none of the ownership features slow down the program while running
-- ownership rules
+- ownership rules:
   - each value in Rust has a variable that’s called its owner
   - there can only be one owner at a time
   - when the owner goes out of scope, the value will be dropped
 - the scope of a variable starts with the declaration and ends with the closing curly brace `}`
-- the simple types are copied instead of moved (integer, float, boolean etc)
+- the primitive types are copied instead of moved (integer, float, boolean etc)
 
 ```rust
 let s1 = String::from("hello");
@@ -543,7 +543,7 @@ println!("s1 = {}, s2 = {}", s1, s2);
 fn main() {
     let s = String::from("hello");  // s comes into scope
 
-    takes_ownership(s);             // s's value moves into the function...
+    takes_ownership(s);             // the value of s moves into the function...
                                     // ... and so is no longer valid here
 
     let x = 5;                      // x comes into scope
@@ -552,13 +552,13 @@ fn main() {
                                     // but i32 is Copy, so it’s okay to still
                                     // use x afterward
 
-} // Here, x goes out of scope, then s. But because s's value was moved, nothing
-  // special happens.
+} // Here, x goes out of scope, then s. But because the value of s was moved,
+  // nothing special happens.
 
 fn takes_ownership(some_string: String) { // some_string comes into scope
     println!("{}", some_string);
-} // Here, some_string goes out of scope and `drop` is called. The backing
-  // memory is freed.
+} // Here, some_string goes out of scope and `drop` is called.
+  // The backing memory is freed.
 
 fn makes_copy(some_integer: i32) { // some_integer comes into scope
     println!("{}", some_integer);
@@ -602,7 +602,7 @@ fn takes_and_gives_back(a_string: String) -> String { // a_string comes into
 ### References and Borrowing
 
 - sometimes a function does not need to get the ownership of a value if it only wants to do some processing based on it
-- a reference to the value can be passed to the function, the owner remaining the calling code; this is called borrowing
+- a reference to the value can be passed to the function, and the owner remains in the calling code; this is called borrowing
 - references are immutable by default: **&T**
 - a reference can be declared mutable with **&mut T**
 - restriction: there cannot be mutable and immutable references to a value at the same time; otherwise, code that has an immutable reference cannot assume that the value will never change
@@ -810,7 +810,7 @@ fn main() {
     // instantiate with some values from other instance
     let user2 = User {
         username: String::from("foo"),
-        email::String::from("bar"),
+        email: String::from("bar"),
         ..user1                     // take the remaining values from user1
     };
 
@@ -863,7 +863,7 @@ fn main() {
 
 #### Exercise 6 (rectangle area with method)
 
-- change the **area** function from **Exercise 4** to be a method on the struct **Rectangle**
+- change the **area** function from **Exercise 5** to be a method on the struct **Rectangle**
 
 ### Enums
 
@@ -953,10 +953,10 @@ fn main() {
 ### Pattern matching
 
 - compare a value against possible patterns; the code corresponding to the first pattern that matches is executed
-- the compiler checks that all the possible cases are handled
+- the compiler checks that all possible cases are handled
 - useful for destructuring types
 - returns the value from the branch that was taken
-- all the branches must return values of the same type
+- all branches must return values of the same type
 
 ```rust
 enum Coin {
@@ -971,7 +971,7 @@ fn value_in_cents(coin: Coin) -> u8 {
         Coin::Penny => 1,
         Coin::Nickel => 5,
         Coin::Dime => 10,
-        /*Coin::Quarter => 25,*/    // error: must handle all the possible enum values
+        /*Coin::Quarter => 25,*/    // error: must handle all possible enum values
     }
 }
 ```
@@ -1101,7 +1101,7 @@ fn main() {
 - stores a mapping of keys of type **K** to values of type **V**
 - uses a hashing function to determine the place for a specific element
   - the order of the elements may appear random
-- custom types can be used as keys; the **Hash** trait must be implemented (usually via #[derive(Hash)])
+- custom types can be used as keys; the **Hash** trait must be implemented (usually via `#[derive(Hash)]`)
 - similar to **map**, **dict** in other languages
 
 ```rust
@@ -1153,9 +1153,9 @@ fn main() {
 
 #### Unrecoverable errors (panic!)
 
-- when **panic!** is called, the program prints an error message, does some cleanup and quit
+- when **panic!** is called, the program prints the error message, does some cleanup and quits
 - panic can be called directly by our code or indirectly by other code that we call
-- by default the stacktrace of the program is not displayed at panic; it can be enabled with:
+- by default the stacktrace of the program is not displayed on panic; it can be enabled with:
   - `RUST_BACKTRACE=1 cargo run`
 - similar to **assert** in other languages
 
@@ -1174,14 +1174,14 @@ fn main() {
 #### Recoverable errors (Result\<T, E>)
 
 - the **Result** enum is defined in the standard library
-- shortcuts for the case when the error case should cause panic
+- shortcuts for causing panic on an error case
   - unwrap
   - expect (similar to unwrap, allows specifying an error message in case of failure)
 - **unwrap** and **expect** should be used when prototyping or in test code
 - errors can be propagated using `?`
   - if the result is **Ok**, the execution continues with the value contained inside
-  - if the result is **Error**, the result is returned from the current function, for the calling code to process it
-  - it must be called inside a function that returns **Result**
+  - if the result is **Error**, the result is returned from the current function, for the calling code to process
+  - can be used inside a function that returns **Result**
 
 ```rust
 // this is already defined in the standard library
@@ -1369,13 +1369,13 @@ fn main() {
 
 ### Traits
 
-- describe the shared behavior of types
+- describe shared behavior of types
 - the behavior of a type is the collection of methods that we can call on that type
 - group method signatures together (similar to an **interface** in other languages)
 - when implementing the trait on a type all the methods of the trait must be defined
 - supported cases:
   - local trait definition, local type definition
-  - local trait definition, external type definition (e.g. implement **Summarize** on **Vec\<T>**)
+  - local trait definition, external type definition (e.g. implement **Summary** on **Vec\<T>**)
   - external trait definition, local type definition (e.g. implement **Display** on **NewsArticle**)
 - unsupported case: external trait definition and external type definition (e.g. implement **Display** on **Vec\<T>**)
 
@@ -1436,7 +1436,7 @@ pub fn notify(item: impl Summary) {
     println!("Breaking news! {}", item.summarize());
 }
 
-// the more generic form (trait bound); useful if T must be used in more than one place
+// the more general form (trait bound); useful if T must be used in more than one place
 pub fn notify<T: Summary>(item: T) {
     println!("Breaking news! {}", item.summarize());
 }
@@ -1552,7 +1552,7 @@ impl<T: Display + PartialOrd> Pair<T> {
     - perimeter: `a + b + c`
 - declare a **Vec\<Circle>**, a **Vec\<Rectangle>** and a **Vec\<Triangle>** and populate them with objects
 - write a function that receives a **Vec** of elements that implement **Shape**, iterates over the elements in the vector and:
-  - compute the total perimeter (sum of the perimeter of all the shapes)
+  - computes the total perimeter (sum of the perimeter of all the shapes)
   - total area (sum of the areas of all the shapes)
 
 ### Tests
