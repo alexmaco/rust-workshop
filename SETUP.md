@@ -31,7 +31,7 @@ Various [IDEs/text editors](https://areweideyet.com/) can be used to edit Rust s
 
 We recommend using [Visual Studio Code](https://code.visualstudio.com/)
 
-Install the **Rust (rls)** extension
+Install the **Rust (rls)** extension. It provides:
 
 - code completion
 - jump to definition, peek definition, find all references, symbol search
@@ -56,12 +56,6 @@ A tool for formatting Rust code.
 
 Documentation can be found [here](https://github.com/rust-lang/rustfmt)
 
-Install:
-
-```bash
-rustup component add rustfmt
-```
-
 Run in the current directory:
 
 ```bash
@@ -73,12 +67,6 @@ cargo fmt
 A tool for static checking Rust code using various lints.
 
 Documentation can be found [here](https://github.com/rust-lang/rust-clippy)
-
-Install:
-
-```bash
-rustup component add clippy
-```
 
 Run in the current directory:
 
