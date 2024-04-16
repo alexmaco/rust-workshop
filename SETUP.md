@@ -31,7 +31,7 @@ Various [IDEs/text editors](https://areweideyet.com/) can be used to edit Rust s
 
 We recommend using [Visual Studio Code](https://code.visualstudio.com/)
 
-Install the **Rust (rls)** extension. It provides:
+Install the [**rust-analyzer**](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer) extension. It provides:
 
 - code completion
 - jump to definition, peek definition, find all references, symbol search
@@ -44,8 +44,7 @@ Install the **Rust (rls)** extension. It provides:
 
 Other useful extensions:
 
-- **Cargo**
-- **Better TOML**
+- **Even Better TOML**
 - **Bracket Pair Colorizer**
 
 ## Tools
@@ -61,6 +60,8 @@ Run in the current directory:
 ```bash
 cargo fmt
 ```
+
+This is the default supported autoformatter when using **rust-analyzer** from VSCode.
 
 ### clippy
 
